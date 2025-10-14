@@ -907,12 +907,18 @@ textarea{resize:vertical; min-height:80px}
     }
 
     // Firestore - Guardar cliente
-    async function guardarCliente(cliente) {
-      if (!state.user) return;
-      if (!cliente.userId) cliente.userId = state.user.uid;
-      const clienteRef = doc(db, 'clientes', cliente.id);
-      await setDoc(clienteRef, cliente);
-    }
+async function guardarCliente(cliente) {
+  if (!state.user) return;
+  if (!cliente.userId) cliente.userId = state.user.uid;
+  
+  const clienteRef = doc(db, 'clientes', cliente.id);
+  
+  // SOLUCIÓN: Envía una copia limpia de los datos.
+  await setDoc(clienteRef, { 
+    ...cliente, 
+    id: undefined // Asegura que no se guarde la propiedad 'id' en el documento
+  }); 
+}
 
     // Firestore - Eliminar cliente
     async function eliminarCliente(id) {
