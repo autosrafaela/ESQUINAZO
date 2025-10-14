@@ -3,9 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Sistema profesional de gestión de clientes para El Esquinazo" />
-  <meta name="theme-color" content="#0f172a" />
-  <title>El Esquinazo PRO – Sistema de Gestión v3.1</title>
+  <title>El Esquinazo – Gestión de Clientes</title>
   
   <style>
 :root{
@@ -23,14 +21,13 @@
   --border:#1f2937;
   --shadow: 0 6px 24px rgba(0,0,0,.35);
   --radius:16px;
-  --admin:#a855f7;
 }
 
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-family: system-ui, -apple-system, sans-serif;
   background: linear-gradient(180deg,var(--bg),#0b1224 60%);
   color:var(--text);
 }
@@ -77,7 +74,6 @@ body{
   backdrop-filter: blur(10px);
   border-bottom:1px solid var(--border);
 }
-.topbar.admin{border-bottom-color:var(--admin)}
 .brand{display:flex; align-items:center; gap:10px}
 .brand .logo{font-size:22px}
 .brand h1{font-size:18px; margin:0}
@@ -95,15 +91,6 @@ body{
   border-radius:8px;
   border:1px solid rgba(6,182,212,.3);
 }
-.role-badge{
-  padding:4px 10px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:700;
-  background:var(--admin);
-  color:#fff;
-  text-transform:uppercase;
-}
 
 .tabs{display:flex; gap:8px; flex-wrap:wrap}
 .tab{
@@ -114,12 +101,11 @@ body{
   border-radius:999px;
   cursor:pointer;
   transition: all .2s;
-  font-size:14px;
 }
 .tab:hover{background:rgba(255,255,255,.05)}
 .tab.is-active{background:var(--brand-2); color:#001217; border-color:transparent; font-weight:600}
 
-main#app{padding:16px; max-width:1200px; margin-inline:auto; min-height: calc(100vh - 180px)}
+main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(100vh - 180px)}
 .view{display:none}
 .view.is-active{display:block}
 
@@ -130,9 +116,6 @@ main#app{padding:16px; max-width:1200px; margin-inline:auto; min-height: calc(10
 @media(min-width:720px){
   .cards{grid-template-columns: repeat(3, 1fr);}
 }
-@media(min-width:1024px){
-  .cards.admin-cards{grid-template-columns: repeat(4, 1fr);}
-}
 .card{
   background:var(--card);
   border:1px solid var(--border);
@@ -140,12 +123,9 @@ main#app{padding:16px; max-width:1200px; margin-inline:auto; min-height: calc(10
   padding:16px;
   box-shadow: var(--shadow);
 }
-.card.admin{border-color:var(--admin)}
 .kpi h3{margin:0 0 6px; color:var(--sub); font-weight:500; font-size:14px}
 .kpi-value{font-size:28px; margin:4px 0 0; font-weight:800; color:var(--brand-2)}
 .kpi-value.danger{color:var(--danger)}
-.kpi-value.ok{color:var(--ok)}
-.kpi-value.admin{color:var(--admin)}
 
 .section{margin-top:22px}
 .section h3{margin:0 0 10px; font-size:18px}
@@ -161,30 +141,19 @@ main#app{padding:16px; max-width:1200px; margin-inline:auto; min-height: calc(10
   font-size:14px;
   font-weight:500;
 }
-.btn:hover{transform:translateY(-1px); border-color:#2b3b55; box-shadow: 0 4px 12px rgba(0,0,0,.3)}
+.btn:hover{transform:translateY(-1px); border-color:#2b3b55}
 .btn:active{transform:translateY(0)}
 .btn.primary{background:var(--brand-2); color:#001217; border-color:transparent; font-weight:700}
 .btn.success{background:var(--ok); color:#00170f; border-color:transparent; font-weight:700; text-decoration:none; display:inline-block}
-.btn.outline{background:transparent}
 .btn.light{background:transparent; color:var(--sub)}
 .btn.danger{background:var(--danger); color:#fff; border-color:transparent}
-.btn.warning{background:var(--warning); color:#1b1000; border-color:transparent; font-weight:700}
-.btn.admin{background:var(--admin); color:#fff; border-color:transparent; font-weight:700}
-.btn:disabled{opacity:.5; cursor:not-allowed; transform:none}
+.btn:disabled{opacity:.5; cursor:not-allowed}
 .btn.full-width{width:100%}
 
-.icon-btn{
-  background:transparent; border:0; color:var(--sub); font-size:24px; line-height:1; cursor:pointer;
-  padding:4px 8px; transition: color .2s;
-}
-.icon-btn:hover{color:var(--text)}
-
 .actions-row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-.sr-only{position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0}
-
 .list{display:grid; gap:10px}
 .empty-hint:empty::after{
-  content:"Sin elementos para mostrar.";
+  content:"Sin clientes registrados.";
   color:var(--muted);
   padding:12px 16px;
   background:rgba(255,255,255,0.02);
@@ -199,69 +168,40 @@ main#app{padding:16px; max-width:1200px; margin-inline:auto; min-height: calc(10
   border:1px solid var(--border);
   border-radius:12px;
   padding:12px;
-  transition: border-color .2s;
 }
 .item:hover{border-color:var(--muted)}
 .item .meta{display:flex; flex-direction:column; gap:4px; flex:1}
 .item .title{font-weight:700; font-size:16px}
-.item .sub{display:flex; gap:6px; flex-wrap:wrap; align-items:center}
+.item .sub{display:flex; gap:6px; flex-wrap:wrap}
 .badge{
   padding:4px 8px; border-radius:999px; font-size:12px; font-weight:700;
   border:1px solid var(--border); color:var(--sub); background:#0e162b;
 }
 .badge.red{color:#fff; background:var(--danger); border-color:transparent}
 .badge.amber{color:#1b1000; background:var(--warning); border-color:transparent}
-.badge.green{color:#00170f; background:var(--ok); border-color:transparent}
-.badge.admin{color:#fff; background:var(--admin); border-color:transparent}
 
 .toolbar{
   display:flex; gap:10px; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap;
 }
-.search-box{
-  position:relative; display:flex; align-items:center; flex:1; max-width:400px;
-}
+.search-box{position:relative; display:flex; align-items:center; flex:1; max-width:400px}
 .search-box input{
   background:#0e162b; color:var(--text);
   border:1px solid var(--border); border-radius:12px;
-  padding:10px 34px 10px 12px; width:100%;
-}
-.search-box input:focus{outline:2px solid rgba(6,182,212,.3); border-color:var(--brand-2)}
-.kbd{
-  position:absolute; right:8px; top:50%; transform:translateY(-50%);
-  border:1px solid var(--border); padding:2px 6px; border-radius:6px; font-size:12px; color:var(--sub);
-  pointer-events:none;
-}
-
-.filter-box{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.filter-box select{
-  background:#0e162b;
-  color:var(--text);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:10px 12px;
-  min-width:200px;
+  padding:10px 12px; width:100%;
 }
 
 .ficha-header{display:flex; gap:12px; align-items:flex-start; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap}
-.ficha-titulos{flex:1}
 .ficha-titulos h2{margin:0; font-size:24px}
 .saldo{margin:4px 0 0; color:var(--sub); font-weight:700; font-size:16px}
 
 .table-wrap{overflow:auto; border:1px solid var(--border); border-radius:12px; background:var(--panel)}
 .table{width:100%; border-collapse:collapse; min-width:600px}
 .table th, .table td{padding:10px 12px; border-bottom:1px solid var(--border); text-align:left}
-.table thead th{background:#0c1427; color:var(--sub); font-weight:600; position:sticky; top:0}
+.table thead th{background:#0c1427; color:var(--sub); font-weight:600}
 .table tbody tr:hover{background:#0c1427}
 .table tbody tr:last-child td{border-bottom:0}
-.table .num{text-align:right; font-variant-numeric: tabular-nums}
-.table .actions{display:flex; gap:6px; justify-content:flex-end}
-.table .btn-icon{
-  padding:4px 8px; font-size:12px; border-radius:6px;
-}
+.table .num{text-align:right}
+.table .btn-icon{padding:4px 8px; font-size:12px}
 
 .grid{display:grid; gap:12px; grid-template-columns:1fr}
 @media(min-width:600px){
@@ -270,13 +210,12 @@ main#app{padding:16px; max-width:1200px; margin-inline:auto; min-height: calc(10
 .grid .full{grid-column:1/-1}
 label{display:block}
 label span{display:block; font-size:14px; color:var(--sub); margin-bottom:6px; font-weight:500}
-input, select, textarea{
+input, select{
   width:100%; background:#0e162b; color:var(--text);
   border:1px solid var(--border); border-radius:10px; padding:10px 12px;
   font-family:inherit; font-size:14px;
 }
-input:focus, select:focus, textarea:focus{outline:2px solid rgba(6,182,212,.3); border-color:var(--brand-2)}
-textarea{resize:vertical; min-height:80px}
+input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var(--brand-2)}
 
 .modal{border:0; padding:0; background:transparent; max-width:90vw}
 .modal::backdrop{background:rgba(0,0,0,.7); backdrop-filter:blur(2px)}
@@ -295,30 +234,7 @@ textarea{resize:vertical; min-height:80px}
   display:flex; gap:10px; justify-content:flex-end; 
   padding:16px 20px; border-top:1px solid var(--border);
 }
-.modal-content .grid, .modal-content p{padding:20px}
-
-.alert{
-  padding:12px 16px; border-radius:12px; margin:16px 0;
-  border:1px solid var(--border); background:rgba(34,197,94,.1);
-  color:var(--text); font-size:14px;
-}
-.alert.warning{background:rgba(245,158,11,.1); border-color:var(--warning)}
-.alert.danger{background:rgba(239,68,68,.1); border-color:var(--danger)}
-.alert.info{background:rgba(6,182,212,.1); border-color:var(--brand-2)}
-.alert.admin{background:rgba(168,85,247,.1); border-color:var(--admin)}
-
-.footer{padding:24px 16px; text-align:center; color:var(--muted); font-size:13px; border-top:1px solid var(--border); margin-top:40px}
-
-.stats-grid{
-  display:grid; gap:12px; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));
-  margin-top:16px;
-}
-.stat-item{
-  background:rgba(255,255,255,.03); border:1px solid var(--border);
-  border-radius:12px; padding:12px;
-}
-.stat-label{font-size:12px; color:var(--sub); margin-bottom:4px}
-.stat-value{font-size:20px; font-weight:700; color:var(--brand-2)}
+.modal-content .grid{padding:20px}
 
 .loading{
   display:flex;
@@ -345,86 +261,69 @@ textarea{resize:vertical; min-height:80px}
 }
 .error-msg.show{display:block}
 
-@media(max-width:720px){
-  .item{flex-direction:column; align-items:stretch}
-  .item .actions-row{justify-content:stretch}
-  .item .actions-row .btn{flex:1; text-align:center}
-  .topbar{flex-wrap:wrap}
-  .tabs{width:100%; order:3}
-  .user-info{width:100%; justify-content:space-between; order:2}
-}
-
 .hidden{display:none!important}
+
+.footer{padding:24px 16px; text-align:center; color:var(--muted); font-size:13px; border-top:1px solid var(--border); margin-top:40px}
   </style>
 </head>
 <body>
-  <!-- PANTALLA DE LOGIN -->
+  <!-- LOGIN -->
   <div id="login-screen" class="login-container">
     <div class="login-box">
       <div class="login-header">
         <div class="logo">🎲</div>
-        <h1>El Esquinazo PRO</h1>
-        <p>Sistema profesional de gestión v3.1</p>
+        <h1>El Esquinazo</h1>
+        <p>Sistema de gestión de clientes</p>
       </div>
 
-      <form id="form-signin" class="login-form">
+      <form id="form-signin">
         <div class="grid">
           <label class="full">
             <span>Email</span>
-            <input type="email" name="email" required placeholder="tu@email.com" autocomplete="email" />
+            <input type="email" name="email" required placeholder="tu@email.com" />
           </label>
           <label class="full">
             <span>Contraseña</span>
-            <input type="password" name="password" required placeholder="••••••••" autocomplete="current-password" />
+            <input type="password" name="password" required placeholder="••••••••" />
           </label>
         </div>
         <div class="error-msg" id="signin-error"></div>
         <button type="submit" class="btn primary full-width" style="margin-top:20px">
-          Iniciar Sesión
+          Ingresar
         </button>
       </form>
-
-      <div class="alert info" style="margin-top:24px; font-size:13px">
-        <strong>ℹ️ Nota:</strong> Si es tu primera vez, el administrador debe crear tu usuario primero.
-      </div>
     </div>
   </div>
 
-  <!-- PANTALLA DE CARGA -->
+  <!-- LOADING -->
   <div id="loading-screen" class="loading hidden">
     <div class="spinner"></div>
-    <p style="color:var(--sub)">Cargando sistema...</p>
+    <p style="color:var(--sub)">Cargando...</p>
   </div>
 
-  <!-- APLICACIÓN PRINCIPAL -->
+  <!-- APP -->
   <div id="main-app" class="hidden">
-    <header class="topbar" id="main-topbar">
+    <header class="topbar">
       <div class="brand">
         <span class="logo">🎲</span>
-        <h1>El Esquinazo <span id="role-indicator"></span></h1>
+        <h1>El Esquinazo</h1>
       </div>
       <div class="user-info">
-        <span class="role-badge" id="user-role" style="display:none">ADMIN</span>
         <span class="user-email" id="user-email">usuario@ejemplo.com</span>
         <button class="btn light" id="btn-logout">Cerrar Sesión</button>
       </div>
-      <nav class="tabs" role="tablist" id="main-tabs">
+      <nav class="tabs">
         <button class="tab is-active" data-tab="dashboard">Dashboard</button>
         <button class="tab" data-tab="clientes">Clientes</button>
-        <button class="tab" data-tab="usuarios" style="display:none">Usuarios</button>
-        <button class="tab" data-tab="datos">Datos</button>
       </nav>
     </header>
 
     <main id="app">
       <!-- DASHBOARD -->
       <section id="dashboard" class="view is-active">
-        <h2 class="sr-only">Panel Principal</h2>
-
-        <!-- KPIs Principales -->
-        <div class="cards" id="kpi-cards">
+        <div class="cards">
           <article class="card kpi">
-            <h3>Fiado Total en la Calle</h3>
+            <h3>Fiado Total</h3>
             <p id="kpi-fiado" class="kpi-value danger">$0</p>
           </article>
           <article class="card kpi">
@@ -432,145 +331,53 @@ textarea{resize:vertical; min-height:80px}
             <p id="kpi-condeuda" class="kpi-value">0</p>
           </article>
           <article class="card kpi">
-            <h3>Deudas Vencidas (>30d)</h3>
+            <h3>Deudas Vencidas</h3>
             <p id="kpi-vencidas" class="kpi-value danger">0</p>
           </article>
-          <!-- Solo admin -->
-          <article class="card kpi admin" id="kpi-usuarios-card" style="display:none">
-            <h3>Usuarios Activos</h3>
-            <p id="kpi-usuarios" class="kpi-value admin">0</p>
-          </article>
         </div>
 
-        <!-- Estadísticas -->
-        <div class="section">
-          <h3>Estadísticas del Mes</h3>
-          <div class="stats-grid">
-            <div class="stat-item">
-              <div class="stat-label">Total Jugadas</div>
-              <div class="stat-value" id="stat-jugadas">0</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-label">Total Pagos</div>
-              <div class="stat-value" id="stat-pagos">0</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-label">Total Clientes</div>
-              <div class="stat-value" id="stat-total-clientes">0</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Panel Admin: Resumen por Usuario -->
-        <div class="section" id="admin-users-summary" style="display:none">
-          <h3>📊 Resumen por Usuario</h3>
-          <div id="lista-usuarios-summary" class="list empty-hint"></div>
-        </div>
-
-        <!-- Acciones rápidas -->
         <div class="section">
           <h3>Acciones Rápidas</h3>
           <div class="actions-row">
-            <button id="btn-registrar-jugada-rapida" class="btn primary">+ Registrar Jugada</button>
-            <button id="btn-nuevo-cliente-rapido" class="btn">+ Añadir Cliente</button>
+            <button id="btn-nuevo-cliente-rapido" class="btn primary">+ Añadir Cliente</button>
           </div>
         </div>
 
-        <!-- Deudas vencidas -->
         <div class="section">
-          <h3>Atención: Deudas Vencidas</h3>
+          <h3>Deudas Vencidas</h3>
           <div id="lista-vencidas" class="list empty-hint"></div>
         </div>
       </section>
 
       <!-- CLIENTES -->
       <section id="clientes" class="view">
-        <h2 class="sr-only">Gestión de Clientes</h2>
-
         <div class="toolbar">
           <div class="search-box">
-            <input id="buscar-clientes" type="search" placeholder="Buscar cliente por nombre..." />
-            <span class="kbd">/</span>
-          </div>
-          <div class="filter-box" id="filter-usuario" style="display:none">
-            <label style="margin:0; color:var(--sub); font-size:14px">Usuario:</label>
-            <select id="filtro-usuario">
-              <option value="">Todos los usuarios</option>
-            </select>
+            <input id="buscar-clientes" type="search" placeholder="Buscar cliente..." />
           </div>
           <button id="btn-add-cliente" class="btn primary">+ Añadir Cliente</button>
         </div>
-
         <div id="lista-clientes" class="list empty-hint"></div>
       </section>
 
-      <!-- USUARIOS (SOLO ADMIN) -->
-      <section id="usuarios" class="view">
-        <h2 class="sr-only">Gestión de Usuarios</h2>
-
-        <div class="toolbar">
-          <h3 style="margin:0">👥 Usuarios del Sistema</h3>
-          <button id="btn-add-usuario" class="btn admin">+ Crear Usuario</button>
-        </div>
-
-        <div class="alert admin" style="margin-bottom:16px">
-          <strong>👑 Panel de Administrador:</strong> Aquí puedes crear y gestionar usuarios. Cada usuario solo verá sus propios clientes.
-        </div>
-
-        <div id="lista-usuarios" class="list empty-hint"></div>
-      </section>
-
-      <!-- DATOS -->
-      <section id="datos" class="view">
-        <h2 class="sr-only">Gestión de Datos</h2>
-
-        <div class="section">
-          <h3>Backup y Restauración</h3>
-          <p style="color:var(--sub); margin-bottom:16px">
-            Exporta tus datos para crear una copia de seguridad local.
-          </p>
-          
-          <div class="actions-row">
-            <button id="btn-exportar" class="btn primary">📥 Exportar Datos</button>
-          </div>
-
-          <div class="alert info" style="margin-top:20px">
-            <strong>☁️ Respaldo automático:</strong> Tus datos se guardan automáticamente en Firebase. El backup es opcional.
-          </div>
-        </div>
-
-        <div class="section">
-          <h3>Información del Sistema</h3>
-          <div class="card">
-            <p style="color:var(--sub); margin:0 0 8px">Total de clientes: <strong id="info-clientes">0</strong></p>
-            <p style="color:var(--sub); margin:0 0 8px">Total de movimientos: <strong id="info-movs">0</strong></p>
-            <p style="color:var(--sub); margin:0 0 8px">Usuario: <strong id="info-user">-</strong></p>
-            <p style="color:var(--sub); margin:0 0 8px" id="info-role-display">Rol: <strong id="info-role">-</strong></p>
-            <p style="color:var(--sub); margin:0">Versión: <strong>3.1 PRO (Multi-usuario + Admin)</strong></p>
-          </div>
-        </div>
-      </section>
-
-      <!-- FICHA CLIENTE -->
+      <!-- FICHA -->
       <section id="ficha" class="view" hidden>
         <div class="ficha-header">
           <button class="btn light" id="volver-clientes">← Volver</button>
           <div class="ficha-titulos">
             <h2 id="ficha-nombre">Cliente</h2>
-            <p id="ficha-saldo" class="saldo">DEUDA TOTAL: $0</p>
-            <p id="ficha-usuario" class="saldo" style="display:none; color:var(--admin)">Usuario: <span></span></p>
+            <p id="ficha-saldo" class="saldo">DEUDA: $0</p>
           </div>
         </div>
 
         <div class="actions-row">
           <button id="btn-registrar-pago" class="btn">Registrar Pago</button>
           <button id="btn-registrar-jugada" class="btn primary">Añadir Jugada</button>
-          <button id="btn-compartir-ficha" class="btn outline">📤 Compartir</button>
-          <a id="btn-whatsapp" class="btn success" target="_blank" rel="noopener">WhatsApp</a>
+          <a id="btn-whatsapp" class="btn success" target="_blank">WhatsApp</a>
         </div>
 
         <div class="section">
-          <h3>Historial de Movimientos</h3>
+          <h3>Historial</h3>
           <div class="table-wrap">
             <table class="table">
               <thead>
@@ -588,136 +395,96 @@ textarea{resize:vertical; min-height:80px}
           </div>
         </div>
       </section>
-
-      <!-- MODALES -->
-      <dialog id="modal-cliente" class="modal">
-        <form method="dialog" class="modal-content" id="form-cliente">
-          <header class="modal-header">
-            <h3 id="modal-cliente-titulo">Nuevo Cliente</h3>
-            <button type="button" class="icon-btn" data-close>×</button>
-          </header>
-          <div class="grid">
-            <label class="full">
-              <span>Nombre y Apellido *</span>
-              <input name="nombre" type="text" required placeholder="Ej: Juan Pérez" />
-            </label>
-            <label class="full">
-              <span>Número de WhatsApp (sin 0 ni 15)</span>
-              <div style="display:flex; align-items:center; gap:8px">
-                <span style="padding:10px 12px; background:#0e162b; border:1px solid var(--border); border-radius:10px; color:var(--sub); white-space:nowrap">+54 9</span>
-                <input name="whatsapp" type="tel" inputmode="numeric" pattern="[0-9]{8,12}" placeholder="3492123456" style="flex:1" />
-              </div>
-              <small style="color:var(--muted); font-size:12px; margin-top:4px; display:block">Ejemplo: 3414567890</small>
-            </label>
-          </div>
-          <footer class="modal-actions">
-            <button class="btn" type="button" value="cancel">Cancelar</button>
-            <button class="btn primary" value="ok">Guardar</button>
-          </footer>
-          <input type="hidden" name="id" />
-        </form>
-      </dialog>
-
-      <dialog id="modal-usuario" class="modal">
-        <form method="dialog" class="modal-content" id="form-usuario">
-          <header class="modal-header">
-            <h3>Crear Nuevo Usuario</h3>
-            <button type="button" class="icon-btn" data-close>×</button>
-          </header>
-          <div class="grid">
-            <label class="full">
-              <span>Nombre del Usuario *</span>
-              <input name="displayName" type="text" required placeholder="Ej: Juan Vendedor" />
-            </label>
-            <label class="full">
-              <span>Email *</span>
-              <input name="email" type="email" required placeholder="usuario@email.com" />
-            </label>
-            <label class="full">
-              <span>Contraseña Temporal * (mínimo 6 caracteres)</span>
-              <input name="password" type="password" required minlength="6" placeholder="••••••••" />
-            </label>
-            <label class="full">
-              <span>Rol</span>
-              <select name="role">
-                <option value="user">Usuario Normal</option>
-                <option value="admin">Administrador</option>
-              </select>
-            </label>
-          </div>
-          <div class="alert info">
-            <strong>📧 Importante:</strong> Envía estas credenciales al usuario de forma segura. Él podrá cambiar su contraseña después.
-          </div>
-          <footer class="modal-actions">
-            <button class="btn" type="button" value="cancel">Cancelar</button>
-            <button class="btn admin" value="ok">Crear Usuario</button>
-          </footer>
-        </form>
-      </dialog>
-
-      <dialog id="modal-mov" class="modal">
-        <form method="dialog" class="modal-content" id="form-mov">
-          <header class="modal-header">
-            <h3 id="modal-mov-titulo">Registrar Movimiento</h3>
-            <button type="button" class="icon-btn" data-close>×</button>
-          </header>
-          <div class="grid">
-            <label>
-              <span>Fecha *</span>
-              <input name="fecha" type="date" required />
-            </label>
-            <label>
-              <span>Tipo *</span>
-              <select name="tipo" required>
-                <option value="jugada">Jugada / Fiado</option>
-                <option value="pago">Pago</option>
-              </select>
-            </label>
-            <label class="full">
-              <span>Descripción</span>
-              <input name="descripcion" type="text" placeholder="Ej: Quiniela Vespertina" />
-            </label>
-            <label>
-              <span>Monto *</span>
-              <input name="monto" type="number" min="0" step="0.01" placeholder="0.00" required />
-            </label>
-          </div>
-          <footer class="modal-actions">
-            <button class="btn" type="button" value="cancel">Cancelar</button>
-            <button class="btn primary" value="ok">Guardar</button>
-          </footer>
-          <input type="hidden" name="clienteId" />
-          <input type="hidden" name="movId" />
-        </form>
-      </dialog>
-
-      <dialog id="modal-confirm" class="modal">
-        <form method="dialog" class="modal-content">
-          <header class="modal-header">
-            <h3>Confirmar Acción</h3>
-            <button type="button" class="icon-btn" data-close>×</button>
-          </header>
-          <p id="confirm-msg" style="padding:20px; margin:0">¿Estás seguro?</p>
-          <footer class="modal-actions">
-            <button class="btn" value="cancel">No, cancelar</button>
-            <button class="btn danger" value="ok">Sí, confirmar</button>
-          </footer>
-        </form>
-      </dialog>
     </main>
 
     <footer class="footer">
-      <small>© <span id="year"></span> El Esquinazo PRO v3.1 – Sistema multi-usuario con panel de administrador ☁️</small>
+      <small>© <span id="year"></span> El Esquinazo – Sistema de gestión simple</small>
     </footer>
+
+    <!-- MODALES -->
+    <dialog id="modal-cliente" class="modal">
+      <form method="dialog" class="modal-content" id="form-cliente">
+        <header class="modal-header">
+          <h3 id="modal-cliente-titulo">Nuevo Cliente</h3>
+          <button type="button" class="btn light" onclick="this.closest('dialog').close()">×</button>
+        </header>
+        <div class="grid">
+          <label class="full">
+            <span>Nombre y Apellido</span>
+            <input name="nombre" type="text" required placeholder="Ej: Juan Pérez" />
+          </label>
+          <label class="full">
+            <span>WhatsApp (sin 0 ni 15)</span>
+            <div style="display:flex; gap:8px">
+              <span style="padding:10px; background:#0e162b; border:1px solid var(--border); border-radius:10px">+54 9</span>
+              <input name="whatsapp" type="tel" placeholder="3492123456" style="flex:1" />
+            </div>
+          </label>
+        </div>
+        <footer class="modal-actions">
+          <button type="button" class="btn" onclick="this.closest('dialog').close()">Cancelar</button>
+          <button type="submit" class="btn primary">Guardar</button>
+        </footer>
+        <input type="hidden" name="id" />
+      </form>
+    </dialog>
+
+    <dialog id="modal-mov" class="modal">
+      <form method="dialog" class="modal-content" id="form-mov">
+        <header class="modal-header">
+          <h3 id="modal-mov-titulo">Movimiento</h3>
+          <button type="button" class="btn light" onclick="this.closest('dialog').close()">×</button>
+        </header>
+        <div class="grid">
+          <label>
+            <span>Fecha</span>
+            <input name="fecha" type="date" required />
+          </label>
+          <label>
+            <span>Tipo</span>
+            <select name="tipo" required>
+              <option value="jugada">Jugada/Fiado</option>
+              <option value="pago">Pago</option>
+            </select>
+          </label>
+          <label class="full">
+            <span>Descripción</span>
+            <input name="descripcion" type="text" placeholder="Ej: Quiniela" />
+          </label>
+          <label>
+            <span>Monto</span>
+            <input name="monto" type="number" min="0" step="0.01" required />
+          </label>
+        </div>
+        <footer class="modal-actions">
+          <button type="button" class="btn" onclick="this.closest('dialog').close()">Cancelar</button>
+          <button type="submit" class="btn primary">Guardar</button>
+        </footer>
+        <input type="hidden" name="clienteId" />
+        <input type="hidden" name="movId" />
+      </form>
+    </dialog>
+
+    <dialog id="modal-confirm" class="modal">
+      <form method="dialog" class="modal-content">
+        <header class="modal-header">
+          <h3>Confirmar</h3>
+          <button type="button" class="btn light" onclick="this.closest('dialog').close()">×</button>
+        </header>
+        <p id="confirm-msg" style="padding:20px; margin:0">¿Estás seguro?</p>
+        <footer class="modal-actions">
+          <button type="button" class="btn" onclick="this.closest('dialog').close()">No</button>
+          <button type="submit" class="btn danger">Sí, eliminar</button>
+        </footer>
+      </form>
+    </dialog>
   </div>
 
-  <!-- Firebase SDK -->
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, collection, doc, setDoc, getDocs, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
-    // Credenciales de Firebase - El Esquinazo
     const firebaseConfig = {
       apiKey: "AIzaSyDuHOmx6K4_7ke85fdlrnQlOGAfMI7bQf4",
       authDomain: "el-esquinazo-9d73f.firebaseapp.com",
@@ -731,501 +498,185 @@ textarea{resize:vertical; min-height:80px}
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // Estado global
     let state = {
       user: null,
-      userRole: 'user',
-      userData: null,
       clientes: [],
-      allUsers: [],
       fichaClienteId: null,
-      filtroUsuario: '',
     };
 
-    // Elementos DOM
-    const loginScreen = document.getElementById('login-screen');
-    const loadingScreen = document.getElementById('loading-screen');
-    const mainApp = document.getElementById('main-app');
-    const formSignin = document.getElementById('form-signin');
-    const signinError = document.getElementById('signin-error');
-
-    // Helpers
     const $ = (sel) => document.querySelector(sel);
     const $$ = (sel) => Array.from(document.querySelectorAll(sel));
     const fmtMoney = (n) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n || 0);
     const todayISO = () => new Date().toISOString().slice(0, 10);
     const parseDate = (iso) => new Date(iso + "T00:00:00");
-    const daysBetween = (isoDate) => {
-      const d1 = parseDate(isoDate);
-      const d2 = new Date();
-      return Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
-    };
+    const daysBetween = (isoDate) => Math.floor(((new Date()) - parseDate(isoDate)) / 86400000);
     const uid = () => Math.random().toString(36).slice(2, 10);
     const sanitizePhone = (p) => {
-      const digits = (p || "").replace(/\D+/g, "");
-      if (!digits) return "";
-      if (digits.startsWith("549")) return digits;
-      return "549" + digits;
+      const d = (p || "").replace(/\D+/g, "");
+      return d ? (d.startsWith("549") ? d : "549" + d) : "";
     };
     const fmtFecha = (iso) => {
       const [y, m, d] = iso.split("-");
       return `${d}/${m}/${y.slice(-2)}`;
     };
 
-    // Auth - Login
-    formSignin.addEventListener('submit', async (e) => {
+    // Auth
+    $('#form-signin').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const email = formSignin.email.value.trim();
-      const password = formSignin.password.value;
-
-      signinError.textContent = '';
-      signinError.classList.remove('show');
-
+      const email = $('#form-signin').email.value.trim();
+      const password = $('#form-signin').password.value;
+      $('#signin-error').textContent = '';
+      $('#signin-error').classList.remove('show');
       try {
         await signInWithEmailAndPassword(auth, email, password);
       } catch (error) {
-        let msg = 'Error al iniciar sesión';
-        if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-          msg = 'Email o contraseña incorrectos';
-        }
-        if (error.code === 'auth/invalid-email') msg = 'Email inválido';
-        signinError.textContent = msg;
-        signinError.classList.add('show');
+        $('#signin-error').textContent = 'Email o contraseña incorrectos';
+        $('#signin-error').classList.add('show');
       }
     });
 
-    // Auth - Logout
-    $('#btn-logout').addEventListener('click', async () => {
-      await signOut(auth);
-    });
+    $('#btn-logout').addEventListener('click', () => signOut(auth));
 
-    // Auth - Estado de sesión
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         state.user = user;
-        
-        loginScreen.classList.add('hidden');
-        loadingScreen.classList.remove('hidden');
-        
-        // Cargar datos del usuario
-        await cargarUsuario();
+        $('#user-email').textContent = user.email;
+        $('#login-screen').classList.add('hidden');
+        $('#loading-screen').classList.remove('hidden');
         await cargarDatos();
-        
-        // Configurar UI según rol
-        configurarUI();
-        
-        loadingScreen.classList.add('hidden');
-        mainApp.classList.remove('hidden');
-        
+        $('#loading-screen').classList.add('hidden');
+        $('#main-app').classList.remove('hidden');
         renderAll();
       } else {
         state.user = null;
-        state.clientes = [];
-        mainApp.classList.add('hidden');
-        loadingScreen.classList.add('hidden');
-        loginScreen.classList.remove('hidden');
+        $('#main-app').classList.add('hidden');
+        $('#loading-screen').classList.add('hidden');
+        $('#login-screen').classList.remove('hidden');
       }
     });
 
-    // Cargar datos del usuario
-    async function cargarUsuario() {
-      const userDoc = await getDoc(doc(db, 'users', state.user.uid));
-      if (userDoc.exists()) {
-        state.userData = userDoc.data();
-        state.userRole = state.userData.role || 'user';
-      } else {
-        // Si no existe el documento, crear uno básico
-        state.userData = {
-          email: state.user.email,
-          role: 'user',
-          displayName: state.user.email.split('@')[0]
-        };
-        await setDoc(doc(db, 'users', state.user.uid), state.userData);
-        state.userRole = 'user';
-      }
-      
-      $('#user-email').textContent = state.user.email;
-      $('#info-user').textContent = state.user.email;
-      $('#info-role').textContent = state.userRole === 'admin' ? 'Administrador' : 'Usuario';
-    }
-
-    // Configurar UI según rol
-    function configurarUI() {
-      if (state.userRole === 'admin') {
-        $('#user-role').style.display = 'inline-block';
-        $('#user-role').textContent = 'ADMIN';
-        $('#role-indicator').textContent = 'PRO';
-        $('#main-topbar').classList.add('admin');
-        $('[data-tab="usuarios"]').style.display = 'inline-block';
-        $('#kpi-usuarios-card').style.display = 'block';
-        $('#kpi-cards').classList.add('admin-cards');
-        $('#admin-users-summary').style.display = 'block';
-        $('#filter-usuario').style.display = 'flex';
-        $('#info-role-display').style.display = 'block';
-      } else {
-        $('#user-role').style.display = 'none';
-        $('#role-indicator').textContent = '';
-        $('#main-topbar').classList.remove('admin');
-        $('[data-tab="usuarios"]').style.display = 'none';
-        $('#kpi-usuarios-card').style.display = 'none';
-        $('#admin-users-summary').style.display = 'none';
-        $('#filter-usuario').style.display = 'none';
-        $('#info-role-display').style.display = 'none';
-      }
-    }
-
-    // Firestore - Cargar datos
     async function cargarDatos() {
       if (!state.user) return;
-      
-      if (state.userRole === 'admin') {
-        // Admin ve todos los clientes
-        const clientesRef = collection(db, 'clientes');
-        const snapshot = await getDocs(clientesRef);
-        state.clientes = [];
-        snapshot.forEach(doc => {
-          state.clientes.push({ id: doc.id, ...doc.data() });
-        });
-        
-        // Cargar todos los usuarios
-        const usersRef = collection(db, 'users');
-        const usersSnapshot = await getDocs(usersRef);
-        state.allUsers = [];
-        usersSnapshot.forEach(doc => {
-          state.allUsers.push({ uid: doc.id, ...doc.data() });
-        });
-      } else {
-        // Usuario normal solo ve sus clientes
-        const clientesRef = collection(db, 'clientes');
-        const q = query(clientesRef, where('userId', '==', state.user.uid));
-        const snapshot = await getDocs(q);
-        state.clientes = [];
-        snapshot.forEach(doc => {
-          state.clientes.push({ id: doc.id, ...doc.data() });
-        });
-      }
+      const snap = await getDocs(collection(db, 'clientes'));
+      state.clientes = [];
+      snap.forEach(doc => state.clientes.push({ id: doc.id, ...doc.data() }));
     }
 
-    // Firestore - Guardar cliente
-async function guardarCliente(cliente) {
-  if (!state.user) return;
-  if (!cliente.userId) cliente.userId = state.user.uid;
-  
-  const clienteRef = doc(db, 'clientes', cliente.id);
-  
-  // SOLUCIÓN: Envía una copia limpia de los datos.
-  await setDoc(clienteRef, { 
-    ...cliente, 
-    id: undefined // Asegura que no se guarde la propiedad 'id' en el documento
-  }); 
-}
+    async function guardarCliente(cliente) {
+      if (!state.user) return;
+      await setDoc(doc(db, 'clientes', cliente.id), cliente);
+    }
 
-    // Firestore - Eliminar cliente
     async function eliminarCliente(id) {
       if (!state.user) return;
-      const clienteRef = doc(db, 'clientes', id);
-      await deleteDoc(clienteRef);
+      await deleteDoc(doc(db, 'clientes', id));
     }
 
-    // Cálculos
-    function saldoCliente(cliente) {
-      return (cliente.movs || []).reduce((acc, m) => acc + (m.debe || 0) - (m.haber || 0), 0);
+    function saldoCliente(c) {
+      return (c.movs || []).reduce((acc, m) => acc + (m.debe || 0) - (m.haber || 0), 0);
     }
 
-    function tieneDeuda(cliente) {
-      return saldoCliente(cliente) > 0;
+    function tieneDeuda(c) {
+      return saldoCliente(c) > 0;
     }
 
-    function isDeudaVencida(cliente) {
-      if (!tieneDeuda(cliente)) return false;
-      return (cliente.movs || []).some((m) => m.tipo === "jugada" && daysBetween(m.fecha) > 30);
+    function isDeudaVencida(c) {
+      if (!tieneDeuda(c)) return false;
+      return (c.movs || []).some(m => m.tipo === "jugada" && daysBetween(m.fecha) > 30);
     }
 
-    function getClientesFiltrados() {
-      if (state.userRole !== 'admin' || !state.filtroUsuario) {
-        return state.clientes;
-      }
-      return state.clientes.filter(c => c.userId === state.filtroUsuario);
-    }
-
-    function totales() {
-      const clientes = getClientesFiltrados();
-      const fiadoTotal = clientes.reduce((acc, c) => acc + saldoCliente(c), 0);
-      const conDeuda = clientes.filter(tieneDeuda).length;
-      const vencidas = clientes.filter(isDeudaVencida).length;
-      return { fiadoTotal, conDeuda, vencidas };
-    }
-
-    function estadisticasMes() {
-      const clientes = getClientesFiltrados();
-      const hoy = new Date();
-      const mesActual = hoy.getMonth();
-      const anioActual = hoy.getFullYear();
-      
-      let jugadas = 0;
-      let pagos = 0;
-      
-      clientes.forEach(c => {
-        (c.movs || []).forEach(m => {
-          const fecha = parseDate(m.fecha);
-          if (fecha.getMonth() === mesActual && fecha.getFullYear() === anioActual) {
-            if (m.tipo === "jugada") jugadas++;
-            else if (m.tipo === "pago") pagos++;
-          }
-        });
-      });
-      
-      return { jugadas, pagos, totalClientes: clientes.length };
-    }
-
-    // Render Dashboard
     function renderDashboard() {
-      const { fiadoTotal, conDeuda, vencidas } = totales();
-      $("#kpi-fiado").textContent = fmtMoney(fiadoTotal);
-      $("#kpi-condeuda").textContent = String(conDeuda);
-      $("#kpi-vencidas").textContent = String(vencidas);
-
-      if (state.userRole === 'admin') {
-        $("#kpi-usuarios").textContent = state.allUsers.length;
-      }
-
-      const stats = estadisticasMes();
-      $("#stat-jugadas").textContent = stats.jugadas;
-      $("#stat-pagos").textContent = stats.pagos;
-      $("#stat-total-clientes").textContent = stats.totalClientes;
-
-      // Resumen por usuario (solo admin)
-      if (state.userRole === 'admin') {
-        renderUsersSummary();
-      }
-
-      // Deudas vencidas
-      const cont = $("#lista-vencidas");
-      cont.innerHTML = "";
-      const clientes = getClientesFiltrados();
-      const list = clientes
-        .map((c) => ({ c, vencida: isDeudaVencida(c), saldo: saldoCliente(c) }))
-        .filter((x) => x.vencida && x.saldo > 0)
-        .sort((a, b) => b.saldo - a.saldo);
-
-      if (!list.length) return;
-
-      list.forEach(({ c, saldo }) => {
-        const dias = diasDesdeUltimaJugada(c);
-        const el = elVencidoItem(c, saldo, dias);
-        cont.appendChild(el);
-      });
-    }
-
-    function renderUsersSummary() {
-      const cont = $("#lista-usuarios-summary");
-      cont.innerHTML = "";
-
-      const userStats = {};
-      state.allUsers.forEach(u => {
-        const clientesUsuario = state.clientes.filter(c => c.userId === u.uid);
-        const fiado = clientesUsuario.reduce((acc, c) => acc + saldoCliente(c), 0);
-        userStats[u.uid] = {
-          user: u,
-          clientes: clientesUsuario.length,
-          fiado: fiado
-        };
-      });
-
-      Object.values(userStats).forEach(({ user, clientes, fiado }) => {
-        const item = document.createElement("div");
-        item.className = "item";
-        item.innerHTML = `
-          <div class="meta">
-            <div class="title">${user.displayName || user.email}</div>
-            <div class="sub">
-              <span class="badge">${clientes} clientes</span>
-              <span class="badge ${fiado > 0 ? 'red' : 'green'}">${fmtMoney(fiado)}</span>
-            </div>
-          </div>
-          <div class="actions-row">
-            <button class="btn light" data-filter-user="${user.uid}">Ver Clientes</button>
-          </div>
-        `;
-        cont.appendChild(item);
-      });
-    }
-
-    function diasDesdeUltimaJugada(c) {
-      const js = (c.movs || []).filter((m) => m.tipo === "jugada");
-      if (!js.length) return 0;
-      const last = js.sort((a, b) => parseDate(b.fecha) - parseDate(a.fecha))[0];
-      return daysBetween(last.fecha);
-    }
-
-    function elVencidoItem(c, saldo, dias) {
-      const wrap = document.createElement("div");
-      wrap.className = "item";
+      const fiadoTotal = state.clientes.reduce((acc, c) => acc + saldoCliente(c), 0);
+      const conDeuda = state.clientes.filter(tieneDeuda).length;
+      const vencidas = state.clientes.filter(isDeudaVencida).length;
       
-      let userInfo = '';
-      if (state.userRole === 'admin') {
-        const userData = state.allUsers.find(u => u.uid === c.userId);
-        if (userData) {
-          userInfo = `<span class="badge admin">${userData.displayName || userData.email}</span>`;
-        }
-      }
-      
-      wrap.innerHTML = `
-        <div class="meta">
-          <div class="title">${c.nombre}</div>
-          <div class="sub">
-            <span class="badge red">${fmtMoney(saldo)}</span>
-            <span class="badge amber">${dias} días</span>
-            ${userInfo}
-          </div>
-        </div>
-        <div class="actions-row">
-          ${c.whatsapp ? `<a class="btn success" target="_blank" rel="noopener" href="${waReminderHref(c, saldo, dias)}">📱 WA</a>` : ''}
-          <button class="btn light" data-open-ficha="${c.id}">Ver Ficha</button>
-        </div>
-      `;
-      return wrap;
-    }
+      $('#kpi-fiado').textContent = fmtMoney(fiadoTotal);
+      $('#kpi-condeuda').textContent = conDeuda;
+      $('#kpi-vencidas').textContent = vencidas;
 
-    function waReminderHref(c, saldo, dias) {
-      const phone = sanitizePhone(c.whatsapp);
-      const msg = `Hola ${c.nombre}, te escribo de *El Esquinazo*. Registramos una deuda de ${fmtMoney(saldo)} con ${dias} días. ¿Podemos coordinar el pago? ¡Gracias!`;
-      return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-    }
-
-    // Render Clientes
-    function renderClientes(filter = "") {
-      const cont = $("#lista-clientes");
+      const cont = $('#lista-vencidas');
       cont.innerHTML = "";
+      const list = state.clientes
+        .filter(c => isDeudaVencida(c))
+        .sort((a, b) => saldoCliente(b) - saldoCliente(a));
 
-      const q = filter.trim().toLowerCase();
-      let clientes = getClientesFiltrados();
-      const arr = [...clientes].sort((a, b) => a.nombre.localeCompare(b.nombre));
-      const list = q ? arr.filter((c) => c.nombre.toLowerCase().includes(q)) : arr;
-
-      list.forEach((c) => {
+      list.forEach(c => {
         const saldo = saldoCliente(c);
-        const vencida = isDeudaVencida(c);
-
-        let userInfo = '';
-        if (state.userRole === 'admin') {
-          const userData = state.allUsers.find(u => u.uid === c.userId);
-          if (userData) {
-            userInfo = `<span class="badge admin">${userData.displayName || userData.email}</span>`;
-          }
-        }
-
-        const item = document.createElement("div");
-        item.className = "item";
-        item.innerHTML = `
+        const dias = Math.max(...(c.movs || []).filter(m => m.tipo === "jugada").map(m => daysBetween(m.fecha)));
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
           <div class="meta">
             <div class="title">${c.nombre}</div>
             <div class="sub">
-              <span class="badge ${saldo > 0 ? 'red' : saldo < 0 ? 'green' : ''}">${fmtMoney(saldo)}</span>
-              ${vencida ? '<span class="badge amber">Vencida</span>' : ""}
-              ${userInfo}
+              <span class="badge red">${fmtMoney(saldo)}</span>
+              <span class="badge amber">${dias} días</span>
             </div>
           </div>
           <div class="actions-row">
-            ${c.whatsapp ? `<a class="btn success" target="_blank" rel="noopener" href="${waHref(c)}">WhatsApp</a>` : ""}
-            <button class="btn light" data-edit="${c.id}">Editar</button>
-            <button class="btn danger" data-del="${c.id}">Eliminar</button>
-            <button class="btn primary" data-open-ficha="${c.id}">Ver Ficha</button>
+            ${c.whatsapp ? `<a class="btn success" target="_blank" href="https://wa.me/${sanitizePhone(c.whatsapp)}?text=${encodeURIComponent('Hola '+c.nombre+', te escribo de El Esquinazo por la deuda de '+fmtMoney(saldo))}">WhatsApp</a>` : ''}
+            <button class="btn light" onclick="abrirFicha('${c.id}')">Ver</button>
           </div>
         `;
-        cont.appendChild(item);
+        cont.appendChild(div);
       });
-
-      // Actualizar select de filtro
-      if (state.userRole === 'admin') {
-        const select = $('#filtro-usuario');
-        select.innerHTML = '<option value="">Todos los usuarios</option>';
-        state.allUsers.forEach(u => {
-          const opt = document.createElement('option');
-          opt.value = u.uid;
-          opt.textContent = u.displayName || u.email;
-          if (state.filtroUsuario === u.uid) opt.selected = true;
-          select.appendChild(opt);
-        });
-      }
     }
 
-    function waHref(c) {
-      const phone = sanitizePhone(c.whatsapp);
-      const msg = `Hola ${c.nombre}, te escribo de *El Esquinazo*.`;
-      return `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-    }
-
-    // Render Usuarios (admin)
-    function renderUsuarios() {
-      const cont = $("#lista-usuarios");
+    function renderClientes(filter = "") {
+      const cont = $('#lista-clientes');
       cont.innerHTML = "";
+      const q = filter.trim().toLowerCase();
+      const list = [...state.clientes]
+        .sort((a, b) => a.nombre.localeCompare(b.nombre))
+        .filter(c => !q || c.nombre.toLowerCase().includes(q));
 
-      state.allUsers.forEach(u => {
-        const clientesCount = state.clientes.filter(c => c.userId === u.uid).length;
-        const item = document.createElement("div");
-        item.className = "item";
-        item.innerHTML = `
+      list.forEach(c => {
+        const saldo = saldoCliente(c);
+        const vencida = isDeudaVencida(c);
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
           <div class="meta">
-            <div class="title">${u.displayName || u.email}</div>
+            <div class="title">${c.nombre}</div>
             <div class="sub">
-              <span class="badge">${u.email}</span>
-              <span class="badge ${u.role === 'admin' ? 'admin' : ''}">${u.role === 'admin' ? 'ADMIN' : 'Usuario'}</span>
-              <span class="badge">${clientesCount} clientes</span>
+              <span class="badge ${saldo > 0 ? 'red' : ''}">${fmtMoney(saldo)}</span>
+              ${vencida ? '<span class="badge amber">Vencida</span>' : ''}
             </div>
           </div>
           <div class="actions-row">
-            <button class="btn light" data-filter-user="${u.uid}">Ver Clientes</button>
+            ${c.whatsapp ? `<a class="btn success" target="_blank" href="https://wa.me/${sanitizePhone(c.whatsapp)}">WhatsApp</a>` : ''}
+            <button class="btn light" onclick="abrirEditarCliente('${c.id}')">Editar</button>
+            <button class="btn danger" onclick="confirmarEliminarCliente('${c.id}')">Eliminar</button>
+            <button class="btn primary" onclick="abrirFicha('${c.id}')">Ver Ficha</button>
           </div>
         `;
-        cont.appendChild(item);
+        cont.appendChild(div);
       });
     }
 
-    // Render Datos
-    function renderDatos() {
-      const clientes = getClientesFiltrados();
-      const totalMovs = clientes.reduce((acc, c) => acc + (c.movs || []).length, 0);
-      $("#info-clientes").textContent = clientes.length;
-      $("#info-movs").textContent = totalMovs;
-    }
-
-    // Ficha
-    function abrirFicha(id) {
+    window.abrirFicha = function(id) {
       state.fichaClienteId = id;
-      const c = state.clientes.find((x) => x.id === id);
+      const c = state.clientes.find(x => x.id === id);
       if (!c) return;
-
-      $("#ficha-nombre").textContent = c.nombre;
-      $("#btn-whatsapp").href = waHref(c);
-      if (!c.whatsapp) {
-        $("#btn-whatsapp").style.display = 'none';
+      $('#ficha-nombre').textContent = c.nombre;
+      const saldo = saldoCliente(c);
+      $('#ficha-saldo').textContent = `DEUDA: ${fmtMoney(saldo)}`;
+      if (c.whatsapp) {
+        $('#btn-whatsapp').href = `https://wa.me/${sanitizePhone(c.whatsapp)}`;
+        $('#btn-whatsapp').style.display = 'inline-block';
       } else {
-        $("#btn-whatsapp").style.display = 'inline-block';
+        $('#btn-whatsapp').style.display = 'none';
       }
-
-      // Mostrar usuario si es admin
-      if (state.userRole === 'admin') {
-        const userData = state.allUsers.find(u => u.uid === c.userId);
-        if (userData) {
-          $('#ficha-usuario').style.display = 'block';
-          $('#ficha-usuario span').textContent = userData.displayName || userData.email;
-        }
-      } else {
-        $('#ficha-usuario').style.display = 'none';
-      }
-
       renderHistorial(c);
-      switchView("ficha");
-    }
+      switchView('ficha');
+    };
 
     function renderHistorial(c) {
-      const cuerpo = $("#tabla-historial");
-      cuerpo.innerHTML = "";
+      const tbody = $('#tabla-historial');
+      tbody.innerHTML = "";
       const movs = [...(c.movs || [])].sort((a, b) => parseDate(a.fecha) - parseDate(b.fecha));
       let saldo = 0;
-
-      movs.forEach((m) => {
+      movs.forEach(m => {
         saldo += (m.debe || 0) - (m.haber || 0);
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -1235,407 +686,179 @@ async function guardarCliente(cliente) {
           <td class="num">${m.haber ? fmtMoney(m.haber) : "-"}</td>
           <td class="num"><strong>${fmtMoney(saldo)}</strong></td>
           <td class="num">
-            <div class="actions">
-              <button class="btn btn-icon light" data-edit-mov="${m.id}">✏️</button>
-              <button class="btn btn-icon danger" data-del-mov="${m.id}">🗑️</button>
-            </div>
+            <button class="btn btn-icon light" onclick="abrirEditarMov('${c.id}','${m.id}')">✏️</button>
+            <button class="btn btn-icon danger" onclick="confirmarEliminarMov('${c.id}','${m.id}')">🗑️</button>
           </td>
         `;
-        cuerpo.appendChild(tr);
+        tbody.appendChild(tr);
       });
-
-      $("#ficha-saldo").textContent = `DEUDA TOTAL: ${fmtMoney(saldo)}`;
     }
 
-    function compartirFicha() {
-      const c = currentCliente();
-      if (!c) return;
-
-      const saldo = saldoCliente(c);
-      const resumen = resumenMovsTexto(c);
-
-      const msg =
-        `Hola ${c.nombre}, te envío tu resumen de cuenta de *El Esquinazo*.\n\n` +
-        `${resumen}\n\n` +
-        `Saldo actual: *${fmtMoney(saldo)}*.\n\n` +
-        `¡Saludos!`;
-
-      const phone = sanitizePhone(c.whatsapp);
-      if (!phone) {
-        alert("Este cliente no tiene WhatsApp configurado.");
-        return;
-      }
-      const href = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
-      window.open(href, "_blank", "noopener");
-    }
-
-    function resumenMovsTexto(c) {
-      const movs = [...(c.movs || [])].sort((a, b) => parseDate(b.fecha) - parseDate(a.fecha));
-      const top = movs.slice(0, 10);
-      const lines = top.map(
-        (m) =>
-          `• ${fmtFecha(m.fecha)} — ${m.descripcion || "-"} (${m.tipo === "jugada" ? "Debe" : "Haber"}: ${
-            m.tipo === "jugada" ? fmtMoney(m.debe) : fmtMoney(m.haber)
-          })`
-      );
-      return lines.join("\n");
-    }
-
-    function currentCliente() {
-      return state.clientes.find((x) => x.id === state.fichaClienteId);
+    function switchView(id) {
+      $$('.view').forEach(v => {
+        v.classList.remove('is-active');
+        v.setAttribute('hidden', '');
+      });
+      const view = $('#'+id);
+      view.classList.add('is-active');
+      view.removeAttribute('hidden');
+      
+      $$('.tab').forEach(t => t.classList.remove('is-active'));
+      const tab = $(`.tab[data-tab="${id}"]`);
+      if (tab) tab.classList.add('is-active');
     }
 
     // Modales
-    const modCliente = $("#modal-cliente");
-    const formCliente = $("#form-cliente");
-    const modUsuario = $("#modal-usuario");
-    const formUsuario = $("#form-usuario");
-    const modMov = $("#modal-mov");
-    const formMov = $("#form-mov");
-    const modConfirm = $("#modal-confirm");
-    const confirmMsg = $("#confirm-msg");
+    window.abrirNuevoCliente = function() {
+      $('#form-cliente').reset();
+      $('#form-cliente').id.value = '';
+      $('#modal-cliente-titulo').textContent = 'Nuevo Cliente';
+      $('#modal-cliente').showModal();
+    };
 
-    function openModal(modal) {
-      modal.showModal();
-      const closer = modal.querySelector("[data-close]");
-      if (closer) closer.onclick = () => modal.close("cancel");
-    }
-
-    // Cliente
-    function abrirNuevoCliente() {
-      formCliente.reset();
-      formCliente.elements["id"].value = "";
-      $("#modal-cliente-titulo").textContent = "Nuevo Cliente";
-      openModal(modCliente);
-      setTimeout(() => formCliente.elements["nombre"].focus(), 100);
-    }
-
-    function abrirEditarCliente(id) {
-      const c = state.clientes.find((x) => x.id === id);
+    window.abrirEditarCliente = function(id) {
+      const c = state.clientes.find(x => x.id === id);
       if (!c) return;
-      formCliente.reset();
-      formCliente.elements["id"].value = c.id;
-      formCliente.elements["nombre"].value = c.nombre;
-      const whatsappLocal = (c.whatsapp || "").replace(/^549/, "");
-      formCliente.elements["whatsapp"].value = whatsappLocal;
-      $("#modal-cliente-titulo").textContent = "Editar Cliente";
-      openModal(modCliente);
-    }
+      $('#form-cliente').reset();
+      $('#form-cliente').id.value = c.id;
+      $('#form-cliente').nombre.value = c.nombre;
+      $('#form-cliente').whatsapp.value = (c.whatsapp || "").replace(/^549/, "");
+      $('#modal-cliente-titulo').textContent = 'Editar Cliente';
+      $('#modal-cliente').showModal();
+    };
 
-    formCliente.addEventListener("submit", (ev) => ev.preventDefault());
-    modCliente.addEventListener("close", async () => {
-      if (modCliente.returnValue !== "ok") return;
-      const id = formCliente.elements["id"].value || uid();
-      const nombre = formCliente.elements["nombre"].value.trim();
-      const whatsapp = sanitizePhone(formCliente.elements["whatsapp"].value);
-
+    $('#form-cliente').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = $('#form-cliente').id.value || uid();
+      const nombre = $('#form-cliente').nombre.value.trim();
+      const whatsapp = sanitizePhone($('#form-cliente').whatsapp.value);
       if (!nombre) return;
 
-      const idx = state.clientes.findIndex((x) => x.id === id);
+      const idx = state.clientes.findIndex(x => x.id === id);
       if (idx >= 0) {
         state.clientes[idx].nombre = nombre;
         state.clientes[idx].whatsapp = whatsapp;
         await guardarCliente(state.clientes[idx]);
       } else {
-        const nuevoCliente = { 
-          id, 
-          nombre, 
-          whatsapp, 
-          movs: [],
-          userId: state.user.uid 
-        };
-        state.clientes.push(nuevoCliente);
-        await guardarCliente(nuevoCliente);
+        const nuevo = { id, nombre, whatsapp, movs: [] };
+        state.clientes.push(nuevo);
+        await guardarCliente(nuevo);
       }
+      $('#modal-cliente').close();
       renderAll();
     });
 
-    function confirmarEliminarCliente(id) {
-      const c = state.clientes.find((x) => x.id === id);
+    window.confirmarEliminarCliente = function(id) {
+      const c = state.clientes.find(x => x.id === id);
       if (!c) return;
-      confirmMsg.textContent = `¿Eliminar a "${c.nombre}" y todo su historial? Esta acción no se puede deshacer.`;
-      openModal(modConfirm);
-      modConfirm.onclose = async () => {
-        if (modConfirm.returnValue !== "ok") return;
-        state.clientes = state.clientes.filter((x) => x.id !== id);
+      $('#confirm-msg').textContent = `¿Eliminar a "${c.nombre}" y todo su historial?`;
+      $('#modal-confirm').showModal();
+      $('#modal-confirm').onsubmit = async () => {
+        state.clientes = state.clientes.filter(x => x.id !== id);
         await eliminarCliente(id);
         if (state.fichaClienteId === id) {
           state.fichaClienteId = null;
-          switchView("clientes");
+          switchView('clientes');
         }
         renderAll();
       };
-    }
+    };
 
-    // Usuario (admin)
-    function abrirNuevoUsuario() {
-      formUsuario.reset();
-      openModal(modUsuario);
-    }
+    window.abrirNuevoMov = function(tipo) {
+      $('#form-mov').reset();
+      $('#form-mov').fecha.value = todayISO();
+      $('#form-mov').tipo.value = tipo;
+      $('#form-mov').clienteId.value = state.fichaClienteId;
+      $('#form-mov').movId.value = '';
+      $('#modal-mov-titulo').textContent = tipo === 'pago' ? 'Registrar Pago' : 'Registrar Jugada';
+      $('#modal-mov').showModal();
+    };
 
-    formUsuario.addEventListener("submit", (ev) => ev.preventDefault());
-    modUsuario.addEventListener("close", async () => {
-      if (modUsuario.returnValue !== "ok") return;
-      
-      const displayName = formUsuario.elements["displayName"].value.trim();
-      const email = formUsuario.elements["email"].value.trim();
-      const password = formUsuario.elements["password"].value;
-      const role = formUsuario.elements["role"].value;
+    window.abrirEditarMov = function(clienteId, movId) {
+      const c = state.clientes.find(x => x.id === clienteId);
+      const m = c?.movs.find(x => x.id === movId);
+      if (!m) return;
+      $('#form-mov').reset();
+      $('#form-mov').fecha.value = m.fecha;
+      $('#form-mov').tipo.value = m.tipo;
+      $('#form-mov').descripcion.value = m.descripcion || '';
+      $('#form-mov').monto.value = m.tipo === 'jugada' ? m.debe : m.haber;
+      $('#form-mov').clienteId.value = clienteId;
+      $('#form-mov').movId.value = movId;
+      $('#modal-mov-titulo').textContent = 'Editar Movimiento';
+      $('#modal-mov').showModal();
+    };
 
-      if (!displayName || !email || !password) return;
-
-      try {
-        // Nota: En producción, esto debería hacerse desde Cloud Functions
-        // Para desarrollo, podemos crear el documento directamente
-        const newUserId = uid() + uid(); // ID temporal
-        await setDoc(doc(db, 'users', newUserId), {
-          email,
-          displayName,
-          role,
-          createdAt: new Date().toISOString(),
-          createdBy: state.user.uid
-        });
-
-        alert(`Usuario creado:\nEmail: ${email}\nContraseña: ${password}\n\n⚠️ Importante: Guarda estas credenciales y envíalas al usuario de forma segura.`);
-        
-        await cargarDatos();
-        renderAll();
-      } catch (error) {
-        alert('Error al crear usuario: ' + error.message);
-      }
-    });
-
-    // Movimiento
-    function abrirMov(tipo = "jugada", clienteId = null, movId = null) {
-      formMov.reset();
-      formMov.elements["clienteId"].value = clienteId || state.fichaClienteId;
-      formMov.elements["movId"].value = movId || "";
-      
-      if (movId) {
-        const c = state.clientes.find(x => x.id === (clienteId || state.fichaClienteId));
-        const mov = c?.movs.find(m => m.id === movId);
-        if (mov) {
-          formMov.elements["fecha"].value = mov.fecha;
-          formMov.elements["tipo"].value = mov.tipo;
-          formMov.elements["descripcion"].value = mov.descripcion || "";
-          formMov.elements["monto"].value = mov.tipo === "jugada" ? mov.debe : mov.haber;
-          $("#modal-mov-titulo").textContent = "Editar Movimiento";
-        }
-      } else {
-        formMov.elements["fecha"].value = todayISO();
-        formMov.elements["tipo"].value = tipo;
-        $("#modal-mov-titulo").textContent = tipo === "pago" ? "Registrar Pago" : "Registrar Jugada";
-      }
-      
-      openModal(modMov);
-      setTimeout(() => formMov.elements["monto"].focus(), 100);
-    }
-
-    formMov.addEventListener("submit", (ev) => ev.preventDefault());
-    modMov.addEventListener("close", async () => {
-      if (modMov.returnValue !== "ok") return;
-      const clienteId = formMov.elements["clienteId"].value;
-      const movId = formMov.elements["movId"].value;
-      const c = state.clientes.find((x) => x.id === clienteId);
+    $('#form-mov').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const clienteId = $('#form-mov').clienteId.value;
+      const movId = $('#form-mov').movId.value;
+      const c = state.clientes.find(x => x.id === clienteId);
       if (!c) return;
 
-      const tipo = formMov.elements["tipo"].value;
-      const fecha = formMov.elements["fecha"].value;
-      const descripcion = formMov.elements["descripcion"].value.trim();
-      const monto = Math.max(0, Number(formMov.elements["monto"].value || 0));
+      const tipo = $('#form-mov').tipo.value;
+      const fecha = $('#form-mov').fecha.value;
+      const descripcion = $('#form-mov').descripcion.value.trim();
+      const monto = Math.max(0, Number($('#form-mov').monto.value || 0));
 
       if (!fecha || !monto) return;
 
       if (movId) {
-        const mov = c.movs.find(m => m.id === movId);
+        const mov = c.movs.find(x => x.id === movId);
         if (mov) {
           mov.fecha = fecha;
           mov.tipo = tipo;
           mov.descripcion = descripcion;
-          mov.debe = tipo === "jugada" ? monto : 0;
-          mov.haber = tipo === "pago" ? monto : 0;
+          mov.debe = tipo === 'jugada' ? monto : 0;
+          mov.haber = tipo === 'pago' ? monto : 0;
         }
       } else {
-        const mov = {
+        c.movs.push({
           id: uid(),
           fecha,
           tipo,
           descripcion,
-          debe: tipo === "jugada" ? monto : 0,
-          haber: tipo === "pago" ? monto : 0,
-        };
-        c.movs.push(mov);
+          debe: tipo === 'jugada' ? monto : 0,
+          haber: tipo === 'pago' ? monto : 0,
+        });
       }
 
       await guardarCliente(c);
-      if (state.fichaClienteId === clienteId) {
-        renderHistorial(c);
-      }
+      $('#modal-mov').close();
+      if (state.fichaClienteId === clienteId) renderHistorial(c);
       renderAll();
     });
 
-    function confirmarEliminarMov(movId) {
-      const c = currentCliente();
-      if (!c) return;
-      const mov = c.movs.find(m => m.id === movId);
-      if (!mov) return;
-
-      confirmMsg.textContent = `¿Eliminar el movimiento "${mov.descripcion || mov.tipo}" del ${fmtFecha(mov.fecha)}?`;
-      openModal(modConfirm);
-      modConfirm.onclose = async () => {
-        if (modConfirm.returnValue !== "ok") return;
-        c.movs = c.movs.filter(m => m.id !== movId);
+    window.confirmarEliminarMov = function(clienteId, movId) {
+      const c = state.clientes.find(x => x.id === clienteId);
+      const m = c?.movs.find(x => x.id === movId);
+      if (!m) return;
+      $('#confirm-msg').textContent = `¿Eliminar el movimiento "${m.descripcion || m.tipo}"?`;
+      $('#modal-confirm').showModal();
+      $('#modal-confirm').onsubmit = async () => {
+        c.movs = c.movs.filter(x => x.id !== movId);
         await guardarCliente(c);
         renderHistorial(c);
         renderAll();
       };
-    }
+    };
 
-    // Exportar
-    function exportarDatos() {
-      const data = {
-        version: "3.1-PRO",
-        fecha: new Date().toISOString(),
-        user: state.user?.email,
-        role: state.userRole,
-        clientes: getClientesFiltrados()
-      };
-      
-      const json = JSON.stringify(data, null, 2);
-      const blob = new Blob([json], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `esquinazo-backup-${new Date().toISOString().slice(0, 10)}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-
-    // Navegación
-    function switchView(id) {
-      $$(".view").forEach((v) => {
-        v.classList.remove("is-active");
-        v.setAttribute("hidden", "");
-      });
-      const view = $("#"+id);
-      view.classList.add("is-active");
-      view.removeAttribute("hidden");
-      
-      $$(".tab").forEach((t) => t.classList.remove("is-active"));
-      const btn = $(`.tab[data-tab="${id}"]`);
-      if (btn) btn.classList.add("is-active");
-
-      if (id === "datos") renderDatos();
-      if (id === "usuarios") renderUsuarios();
-    }
-
-    // Eventos UI
-    $$(".tab").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        switchView(btn.getAttribute("data-tab"));
-      });
-    });
-
-    $("#btn-nuevo-cliente-rapido").addEventListener("click", abrirNuevoCliente);
-    $("#btn-registrar-jugada-rapida").addEventListener("click", () => {
-      if (!state.clientes.length) { 
-        alert("Primero debes agregar un cliente.");
-        abrirNuevoCliente(); 
-        return; 
-      }
-      const id = state.fichaClienteId || state.clientes[0].id;
-      abrirMov("jugada", id);
-    });
-
-    $("#btn-add-cliente").addEventListener("click", abrirNuevoCliente);
-    $("#btn-add-usuario").addEventListener("click", abrirNuevoUsuario);
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "/" && !e.target.matches("input, textarea")) {
-        e.preventDefault();
-        $("#buscar-clientes").focus();
-      }
-    });
-
-    $("#buscar-clientes").addEventListener("input", (e) => renderClientes(e.target.value));
-    
-    $("#filtro-usuario").addEventListener("change", (e) => {
-      state.filtroUsuario = e.target.value;
-      renderAll();
-    });
-
-    $("#lista-clientes").addEventListener("click", (e) => {
-      const t = e.target;
-      const editId = t.closest("[data-edit]")?.getAttribute("data-edit");
-      const delId = t.closest("[data-del]")?.getAttribute("data-del");
-      const fichaId = t.closest("[data-open-ficha]")?.getAttribute("data-open-ficha");
-      if (editId) abrirEditarCliente(editId);
-      else if (delId) confirmarEliminarCliente(delId);
-      else if (fichaId) abrirFicha(fichaId);
-    });
-
-    $("#lista-vencidas").addEventListener("click", (e) => {
-      const fichaId = e.target.closest("[data-open-ficha]")?.getAttribute("data-open-ficha");
-      if (fichaId) abrirFicha(fichaId);
-    });
-
-    $("#lista-usuarios-summary").addEventListener("click", (e) => {
-      const userId = e.target.closest("[data-filter-user]")?.getAttribute("data-filter-user");
-      if (userId) {
-        state.filtroUsuario = userId;
-        switchView("clientes");
-        renderAll();
-      }
-    });
-
-    $("#lista-usuarios").addEventListener("click", (e) => {
-      const userId = e.target.closest("[data-filter-user]")?.getAttribute("data-filter-user");
-      if (userId) {
-        state.filtroUsuario = userId;
-        switchView("clientes");
-        renderAll();
-      }
-    });
-
-    $("#volver-clientes").addEventListener("click", () => switchView("clientes"));
-    $("#btn-registrar-pago").addEventListener("click", () => abrirMov("pago"));
-    $("#btn-registrar-jugada").addEventListener("click", () => abrirMov("jugada"));
-    $("#btn-compartir-ficha").addEventListener("click", compartirFicha);
-
-    $("#tabla-historial").addEventListener("click", (e) => {
-      const editBtn = e.target.closest("[data-edit-mov]");
-      const delBtn = e.target.closest("[data-del-mov]");
-      
-      if (editBtn) {
-        abrirMov(null, state.fichaClienteId, editBtn.getAttribute("data-edit-mov"));
-      } else if (delBtn) {
-        confirmarEliminarMov(delBtn.getAttribute("data-del-mov"));
-      }
-    });
-
-    $$("dialog .icon-btn[data-close]").forEach((b) => b.addEventListener("click", (e) => {
-      e.target.closest("dialog")?.close("cancel");
-    }));
-
-    $$(".modal-content .btn[value='cancel']").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        e.target.closest("dialog")?.close("cancel");
-      });
-    });
-
-    $("#btn-exportar").addEventListener("click", exportarDatos);
-    $("#year").textContent = new Date().getFullYear();
+    // Eventos
+    $$('.tab').forEach(btn => btn.addEventListener('click', () => switchView(btn.dataset.tab)));
+    $('#btn-nuevo-cliente-rapido').addEventListener('click', abrirNuevoCliente);
+    $('#btn-add-cliente').addEventListener('click', abrirNuevoCliente);
+    $('#buscar-clientes').addEventListener('input', (e) => renderClientes(e.target.value));
+    $('#volver-clientes').addEventListener('click', () => switchView('clientes'));
+    $('#btn-registrar-pago').addEventListener('click', () => abrirNuevoMov('pago'));
+    $('#btn-registrar-jugada').addEventListener('click', () => abrirNuevoMov('jugada'));
+    $('#year').textContent = new Date().getFullYear();
 
     function renderAll() {
       renderDashboard();
-      renderClientes($("#buscar-clientes").value || "");
-      if (state.fichaClienteId) {
-        const c = state.clientes.find(x => x.id === state.fichaClienteId);
-        if (c) renderHistorial(c);
-      }
+      renderClientes($('#buscar-clientes').value || '');
     }
 
-    console.log("🎲 El Esquinazo PRO v3.1 - Sistema multi-usuario cargado");
+    console.log("🎲 El Esquinazo – Sistema cargado");
   </script>
 </body>
 </html>
