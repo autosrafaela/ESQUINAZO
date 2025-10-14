@@ -373,8 +373,8 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         <div class="actions-row">
           <button id="btn-registrar-pago" class="btn">Registrar Pago</button>
           <button id="btn-registrar-jugada" class="btn primary">Añadir Jugada</button>
-          <button id="btn-compartir-ficha" class="btn" style="background:var(--warning); color:#1b1000; border:0">📤 Enviar Resumen</button>
-          <a id="btn-whatsapp" class="btn success" target="_blank">WhatsApp Simple</a>
+          <button id="btn-compartir-ficha" class="btn" style="background:var(--warning); color:#1b1000; font-weight:700">📤 Enviar Resumen</button>
+          <a id="btn-whatsapp" class="btn success" target="_blank">💬 WhatsApp</a>
         </div>
 
         <div class="section">
@@ -662,12 +662,16 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       $('#ficha-nombre').textContent = c.nombre;
       const saldo = saldoCliente(c);
       $('#ficha-saldo').textContent = `DEUDA: ${fmtMoney(saldo)}`;
+      
+      // Configurar botón de WhatsApp simple
       if (c.whatsapp) {
-        $('#btn-whatsapp').href = `https://wa.me/${sanitizePhone(c.whatsapp)}`;
+        const mensajeSimple = `Hola ${c.nombre}, te escribo de *El Esquinazo*.`;
+        $('#btn-whatsapp').href = `https://wa.me/${sanitizePhone(c.whatsapp)}?text=${encodeURIComponent(mensajeSimple)}`;
         $('#btn-whatsapp').style.display = 'inline-block';
       } else {
         $('#btn-whatsapp').style.display = 'none';
       }
+      
       renderHistorial(c);
       switchView('ficha');
     };
@@ -852,7 +856,34 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     $('#volver-clientes').addEventListener('click', () => switchView('clientes'));
     $('#btn-registrar-pago').addEventListener('click', () => abrirNuevoMov('pago'));
     $('#btn-registrar-jugada').addEventListener('click', () => abrirNuevoMov('jugada'));
+    $('#btn-compartir-ficha').addEventListener('click', compartirFicha);
     $('#year').textContent = new Date().getFullYear();
+
+    function compartirFicha() {
+      const c = state.clientes.find(x => x.id === state.fichaClienteId);
+      if (!c) return;
+      
+      if (!c.whatsapp) {
+        alert('⚠️ Este cliente no tiene WhatsApp configurado.\n\nPuedes agregarlo editando el cliente.');
+        return;
+      }
+
+      const saldo = saldoCliente(c);
+      const movs = [...(c.movs || [])].sort((a, b) => parseDate(b.fecha) - parseDate(a.fecha));
+      const ultimos = movs.slice(0, 10);
+      
+      let resumen = ultimos.map(m => {
+        const tipo = m.tipo === 'jugada' ? '🎲 Jugada' : '💰 Pago';
+        const monto = m.tipo === 'jugada' ? fmtMoney(m.debe) : fmtMoney(m.haber);
+        const desc = m.descripcion ? ` - ${m.descripcion}` : '';
+        return `${fmtFecha(m.fecha)}: ${tipo}${desc} ${monto}`;
+      }).join('\n');
+
+      const mensaje = `Hola *${c.nombre}*,\n\nTe envío el resumen de tu cuenta de *El Esquinazo*:\n\n${resumen}\n\n━━━━━━━━━━━━━━\n*SALDO ACTUAL: ${fmtMoney(saldo)}*\n━━━━━━━━━━━━━━\n\n${saldo > 0 ? '⚠️ Por favor coordina el pago lo antes posible.' : '✅ Tu cuenta está al día.'}\n\n¡Gracias!`;
+
+      const url = `https://wa.me/${sanitizePhone(c.whatsapp)}?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
+    }
 
     function renderAll() {
       renderDashboard();
