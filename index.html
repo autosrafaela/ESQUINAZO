@@ -418,6 +418,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       <!-- CLIENTES -->
       <div id="clientes" class="view">
         <div class="toolbar">
+          <button class="btn light" onclick="switchView('dashboard')">← Volver</button>
           <div class="search-box">
             <input type="text" placeholder="🔍 Buscar cliente..." id="buscar-clientes"/>
           </div>
@@ -428,6 +429,10 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
 
       <!-- NUEVA SECCIÓN: QUINIELA -->
       <div id="quiniela" class="view">
+        <div class="toolbar">
+          <button class="btn light" onclick="switchView('dashboard')">← Volver</button>
+        </div>
+        
         <!-- 4 Cards principales -->
         <div class="cards four-cols">
           <div class="card kpi">
@@ -1329,11 +1334,20 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       if (btn.dataset.tab === 'quiniela') {
         renderQuiniela();
       }
+      if (btn.dataset.tab === 'clientes') {
+        // Resetear búsqueda y mostrar TODOS los clientes
+        $('#buscar-clientes').value = '';
+        renderClientes('');
+      }
     }));
     $('#btn-nuevo-cliente-rapido').addEventListener('click', abrirNuevoCliente);
     $('#btn-add-cliente').addEventListener('click', abrirNuevoCliente);
     $('#buscar-clientes').addEventListener('input', (e) => renderClientes(e.target.value));
-    $('#volver-clientes').addEventListener('click', () => switchView('clientes'));
+    $('#volver-clientes').addEventListener('click', () => {
+      $('#buscar-clientes').value = '';
+      renderClientes('');
+      switchView('clientes');
+    });
     $('#btn-registrar-pago').addEventListener('click', () => abrirNuevoMov('pago'));
     $('#btn-registrar-jugada').addEventListener('click', () => abrirNuevoMov('jugada'));
     $('#btn-compartir-ficha').addEventListener('click', compartirFicha);
