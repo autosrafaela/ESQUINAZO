@@ -544,6 +544,15 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             <canvas id="chart-quiniela"></canvas>
           </div>
         </div>
+
+        <!-- NUEVAS ACCIONES -->
+        <div class="section">
+          <div class="actions-row">
+            <button class="btn danger" onclick="cerrarMesQuiniela()">🔒 Cerrar Mes</button>
+            <button class="btn primary" onclick="abrirHistoricoMensual()">📊 Ver Histórico Mensual</button>
+            <button class="btn primary" onclick="abrirComparacionMeses()">📈 Comparar Meses</button>
+          </div>
+        </div>
       </div>
 
       <!-- FICHA -->
@@ -675,6 +684,63 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           <button type="submit" class="btn danger">Eliminar</button>
         </div>
       </form>
+    </div>
+  </dialog>
+
+  <!-- Modal Histórico Mensual -->
+  <dialog class="modal" id="modal-historico" style="max-width:90vw">
+    <div class="modal-content" style="min-width:min(900px,90vw)">
+      <div class="modal-header">
+        <h3>📊 Histórico Mensual - Quiniela</h3>
+      </div>
+      <div class="modal-body">
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Mes</th>
+                <th class="num">Ventas</th>
+                <th class="num">Tickets</th>
+                <th class="num">Débitos</th>
+                <th class="num">Comisiones</th>
+                <th class="num">Días</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-historico"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn light" onclick="this.closest('dialog').close()">Cerrar</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Modal Comparación de Meses -->
+  <dialog class="modal" id="modal-comparacion" style="max-width:90vw">
+    <div class="modal-content" style="min-width:min(900px,90vw)">
+      <div class="modal-header">
+        <h3>📈 Comparación de Meses</h3>
+      </div>
+      <div class="modal-body">
+        <div class="grid">
+          <label>
+            <span>Mes 1</span>
+            <select id="select-mes1"></select>
+          </label>
+          <label>
+            <span>Mes 2</span>
+            <select id="select-mes2"></select>
+          </label>
+        </div>
+        <button class="btn primary full-width" onclick="compararMeses()" style="margin-top:16px">📊 Generar Comparación</button>
+        <div class="chart-container" style="margin-top:24px">
+          <canvas id="chart-comparacion"></canvas>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn light" onclick="this.closest('dialog').close()">Cerrar</button>
+      </div>
     </div>
   </dialog>
 
@@ -1374,6 +1440,194 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       
       $('#buscar-clientes').value = '';
     };
+
+    // =============================================
+    // FUNCIONES QUINIELA - CERRAR MES E HISTÓRICO
+    // =============================================
+    
+    // Cerrar mes actual
+    window.cerrarMesQuiniela = async function() {
+      const mesActual = new Date().toISOString().substring(0, 7); // YYYY-MM
+      
+      // Verificar si ya está cerrado
+      const mesesCerrados = JSON.parse(localStorage.getItem('quiniela_meses_cerrados') || '{}');
+      if (mesesCerrados[mesActual]) {
+        alert('⚠️ Este mes ya fue cerrado anteriormente');
+        return;
+      }
+      
+      if (!confirm(`¿Cerrar el mes ${formatearMes(mesActual)}?\n\nEsto guardará los datos actuales como histórico y ya no podrás modificarlos.`)) {
+        return;
+      }
+      
+      // Calcular totales del mes
+      const quinielaDatos = JSON.parse(localStorage.getItem('quiniela') || '{}');
+      let ventasMes = 0, ticketsMes = 0, debitosMes = 0, comisionesMes = 0;
+      let diasRegistrados = 0;
+      
+      Object.entries(quinielaDatos).forEach(([fecha, datos]) => {
+        if (fecha.startsWith(mesActual)) {
+          ventasMes += datos.ventas || 0;
+          ticketsMes += datos.tickets || 0;
+          debitosMes += datos.debitos || 0;
+          comisionesMes += datos.comisiones || 0;
+          diasRegistrados++;
+        }
+      });
+      
+      if (diasRegistrados === 0) {
+        alert('⚠️ No hay datos registrados para este mes');
+        return;
+      }
+      
+      const resumenMes = {
+        mes: mesActual,
+        ventas: ventasMes,
+        tickets: ticketsMes,
+        debitos: debitosMes,
+        comisiones: comisionesMes,
+        diasRegistrados,
+        fechaCierre: new Date().toISOString()
+      };
+      
+      mesesCerrados[mesActual] = resumenMes;
+      localStorage.setItem('quiniela_meses_cerrados', JSON.stringify(mesesCerrados));
+      
+      alert(`✅ Mes ${formatearMes(mesActual)} cerrado correctamente\n\n📊 Resumen:\nVentas: ${fmtMoney(ventasMes)}\nTickets: ${ticketsMes}\nDébitos: ${fmtMoney(debitosMes)}\nComisiones: ${fmtMoney(comisionesMes)}\nDías: ${diasRegistrados}`);
+    };
+    
+    // Abrir histórico mensual
+    window.abrirHistoricoMensual = function() {
+      const modal = $('#modal-historico');
+      const tbody = $('#tbody-historico');
+      
+      const mesesCerrados = JSON.parse(localStorage.getItem('quiniela_meses_cerrados') || '{}');
+      const mesesArray = Object.values(mesesCerrados).sort((a,b) => b.mes.localeCompare(a.mes));
+      
+      if (mesesArray.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--sub);padding:24px">No hay meses cerrados aún</td></tr>';
+      } else {
+        tbody.innerHTML = mesesArray.map(mes => `
+          <tr>
+            <td style="font-weight:700;color:var(--brand-2)">${formatearMes(mes.mes)}</td>
+            <td class="num">${fmtMoney(mes.ventas)}</td>
+            <td class="num">${mes.tickets}</td>
+            <td class="num">${fmtMoney(mes.debitos)}</td>
+            <td class="num">${fmtMoney(mes.comisiones)}</td>
+            <td class="num">${mes.diasRegistrados}</td>
+          </tr>
+        `).join('');
+      }
+      
+      modal.showModal();
+    };
+    
+    // Abrir comparación de meses
+    window.abrirComparacionMeses = function() {
+      const modal = $('#modal-comparacion');
+      const select1 = $('#select-mes1');
+      const select2 = $('#select-mes2');
+      
+      const mesesCerrados = JSON.parse(localStorage.getItem('quiniela_meses_cerrados') || '{}');
+      const mesesArray = Object.keys(mesesCerrados).sort((a,b) => b.localeCompare(a));
+      
+      if (mesesArray.length < 2) {
+        alert('⚠️ Necesitas al menos 2 meses cerrados para comparar');
+        return;
+      }
+      
+      const options = mesesArray.map(mes => 
+        `<option value="${mes}">${formatearMes(mes)}</option>`
+      ).join('');
+      
+      select1.innerHTML = options;
+      select2.innerHTML = options;
+      
+      if (mesesArray.length >= 2) {
+        select2.selectedIndex = 1;
+      }
+      
+      modal.showModal();
+    };
+    
+    // Comparar dos meses seleccionados
+    let chartComparacion = null;
+    window.compararMeses = function() {
+      const mes1 = $('#select-mes1').value;
+      const mes2 = $('#select-mes2').value;
+      
+      if (mes1 === mes2) {
+        alert('⚠️ Selecciona dos meses diferentes');
+        return;
+      }
+      
+      const mesesCerrados = JSON.parse(localStorage.getItem('quiniela_meses_cerrados') || '{}');
+      const datos1 = mesesCerrados[mes1];
+      const datos2 = mesesCerrados[mes2];
+      
+      const ctx = $('#chart-comparacion');
+      
+      if (chartComparacion) {
+        chartComparacion.destroy();
+      }
+      
+      chartComparacion = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['Ventas', 'Tickets', 'Débitos', 'Comisiones'],
+          datasets: [
+            {
+              label: formatearMes(mes1),
+              data: [datos1.ventas, datos1.tickets, datos1.debitos, datos1.comisiones],
+              backgroundColor: '#22c55e'
+            },
+            {
+              label: formatearMes(mes2),
+              data: [datos2.ventas, datos2.tickets, datos2.debitos, datos2.comisiones],
+              backgroundColor: '#06b6d4'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#cbd5e1' }
+            },
+            tooltip: {
+              backgroundColor: '#111827',
+              titleColor: '#e5e7eb',
+              bodyColor: '#cbd5e1',
+              borderColor: '#1f2937',
+              borderWidth: 1
+            }
+          },
+          scales: {
+            x: {
+              grid: { color: '#1f2937' },
+              ticks: { color: '#cbd5e1' }
+            },
+            y: {
+              grid: { color: '#1f2937' },
+              ticks: { 
+                color: '#cbd5e1',
+                callback: function(value) {
+                  return value.toLocaleString('es-AR');
+                }
+              }
+            }
+          }
+        }
+      });
+    };
+    
+    // Formatear mes YYYY-MM a texto legible
+    function formatearMes(mesStr) {
+      const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+      const [year, month] = mesStr.split('-');
+      return `${meses[parseInt(month)-1]} ${year}`;
+    }
 
     console.log("🎲 El Esquinazo – Sistema cargado con Quiniela");
   </script>
