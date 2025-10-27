@@ -1034,9 +1034,11 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       if (!c) return;
       $('#confirm-msg').textContent = `¿Eliminar a "${c.nombre}" y todo su historial?`;
       $('#modal-confirm').showModal();
-      $('#modal-confirm').onsubmit = async () => {
+      $('#modal-confirm').onsubmit = async (e) => {
+        e.preventDefault(); // CRÍTICO: Prevenir recarga de página
         state.clientes = state.clientes.filter(x => x.id !== id);
         await eliminarCliente(id);
+        $('#modal-confirm').close(); // Cerrar modal
         if (state.fichaClienteId === id) {
           state.fichaClienteId = null;
           switchView('clientes');
@@ -1117,9 +1119,11 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       if (!m) return;
       $('#confirm-msg').textContent = `¿Eliminar el movimiento "${m.descripcion || m.tipo}"?`;
       $('#modal-confirm').showModal();
-      $('#modal-confirm').onsubmit = async () => {
+      $('#modal-confirm').onsubmit = async (e) => {
+        e.preventDefault(); // CRÍTICO: Prevenir recarga de página
         c.movs = c.movs.filter(x => x.id !== movId);
         await guardarCliente(c);
+        $('#modal-confirm').close(); // Cerrar modal
         renderHistorial(c);
         renderAll();
       };
