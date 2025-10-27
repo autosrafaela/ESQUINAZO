@@ -42,6 +42,9 @@ body{
   justify-content:center;
   padding:20px;
 }
+.login-container[hidden]{
+  display:none !important;
+}
 .login-box{
   background:var(--panel);
   border:1px solid var(--border);
@@ -153,6 +156,7 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
 .btn:active{transform:translateY(0)}
 .btn.primary{background:var(--brand-2); color:#001217; border-color:transparent; font-weight:700}
 .btn.success{background:var(--ok); color:#00170f; border-color:transparent; font-weight:700; text-decoration:none; display:inline-block}
+.btn.warning{background:var(--warning); color:#1b1000; border-color:transparent; font-weight:700}
 .btn.light{background:transparent; color:var(--sub)}
 .btn.danger{background:var(--danger); color:#fff; border-color:transparent}
 .btn:disabled{opacity:.5; cursor:not-allowed}
@@ -365,6 +369,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     </nav>
 
     <nav class="topbar" style="top:auto">
+      <div style="flex:1"></div>
       <div class="tabs">
         <button class="tab is-active" data-tab="dashboard">Dashboard</button>
         <button class="tab" data-tab="clientes">Clientes</button>
@@ -380,12 +385,12 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             <h3>Fiado Total</h3>
             <div class="kpi-value danger" id="kpi-fiado">$ 0</div>
           </div>
-          <div class="card kpi">
-            <h3>Clientes con Deuda</h3>
+          <div class="card kpi" style="cursor:pointer" onclick="filtrarClientesConDeuda()">
+            <h3>Clientes con Deuda 👆</h3>
             <div class="kpi-value" id="kpi-condeuda">0</div>
           </div>
-          <div class="card kpi">
-            <h3>Deudas Vencidas</h3>
+          <div class="card kpi" style="cursor:pointer" onclick="filtrarDeudasVencidas()">
+            <h3>Deudas Vencidas 👆</h3>
             <div class="kpi-value danger" id="kpi-vencidas">0</div>
           </div>
           <!-- NUEVAS CARDS -->
@@ -551,7 +556,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           <div class="actions-row">
             <button class="btn light" id="volver-clientes">← Volver</button>
             <button class="btn" onclick="abrirEditarCliente(state.fichaClienteId)">Editar</button>
-            <button class="btn success" id="btn-compartir-ficha">📤 Enviar Resumen</button>
+            <button class="btn warning" id="btn-compartir-ficha">📤 Enviar Resumen</button>
             <a class="btn success" id="btn-whatsapp" target="_blank" style="display:none">💬 WhatsApp</a>
           </div>
         </div>
@@ -1298,6 +1303,77 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       renderDashboard();
       renderClientes($('#buscar-clientes').value || '');
     }
+
+    // Funciones de filtrado desde dashboard
+    window.filtrarClientesConDeuda = function() {
+      switchView('clientes');
+      const clientesConDeuda = state.clientes.filter(c => saldoCliente(c) > 0);
+      const lista = $('#lista-clientes');
+      lista.innerHTML = '';
+      
+      if (clientesConDeuda.length === 0) {
+        lista.innerHTML = '<div style="color:var(--muted); padding:12px">✅ No hay clientes con deuda</div>';
+        return;
+      }
+      
+      clientesConDeuda.forEach(c => {
+        const saldo = saldoCliente(c);
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <div class="meta">
+            <div class="title">${c.nombre}</div>
+            <div class="sub">
+              <span class="badge red">${fmtMoney(saldo)}</span>
+            </div>
+          </div>
+          <div class="actions-row">
+            <button class="btn" onclick="abrirFicha('${c.id}')">Ver</button>
+            <button class="btn light" onclick="abrirEditarCliente('${c.id}')">✏️</button>
+            <button class="btn danger" onclick="confirmarEliminarCliente('${c.id}')">🗑️</button>
+          </div>
+        `;
+        lista.appendChild(div);
+      });
+      
+      $('#buscar-clientes').value = '';
+    };
+
+    window.filtrarDeudasVencidas = function() {
+      switchView('clientes');
+      const vencidas = state.clientes.filter(c => saldoCliente(c) > 0 && diasVencimiento(c) > 30);
+      const lista = $('#lista-clientes');
+      lista.innerHTML = '';
+      
+      if (vencidas.length === 0) {
+        lista.innerHTML = '<div style="color:var(--muted); padding:12px">✅ No hay deudas vencidas</div>';
+        return;
+      }
+      
+      vencidas.forEach(c => {
+        const saldo = saldoCliente(c);
+        const dias = diasVencimiento(c);
+        const div = document.createElement('div');
+        div.className = 'item';
+        div.innerHTML = `
+          <div class="meta">
+            <div class="title">${c.nombre}</div>
+            <div class="sub">
+              <span class="badge red">${fmtMoney(saldo)}</span>
+              <span class="badge amber">${dias} días</span>
+            </div>
+          </div>
+          <div class="actions-row">
+            <button class="btn" onclick="abrirFicha('${c.id}')">Ver</button>
+            <button class="btn light" onclick="abrirEditarCliente('${c.id}')">✏️</button>
+            <button class="btn danger" onclick="confirmarEliminarCliente('${c.id}')">🗑️</button>
+          </div>
+        `;
+        lista.appendChild(div);
+      });
+      
+      $('#buscar-clientes').value = '';
+    };
 
     console.log("🎲 El Esquinazo – Sistema cargado con Quiniela");
   </script>
