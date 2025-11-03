@@ -431,6 +431,12 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       <div id="quiniela" class="view">
         <div class="toolbar">
           <button class="btn light" id="volver-dashboard-quiniela">← Volver</button>
+          <div style="display:flex; align-items:center; gap:12px;">
+            <label style="display:flex; align-items:center; gap:8px; margin:0; color:var(--sub); font-size:14px;">
+              <span>📅 Ver mes:</span>
+              <input type="month" id="selector-mes-quiniela" style="padding:8px 12px; background:#0e162b; color:var(--text); border:1px solid var(--border); border-radius:10px; font-size:14px;"/>
+            </label>
+          </div>
         </div>
         
         <!-- 4 Cards principales -->
@@ -1173,14 +1179,24 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     // Renderizar sección Quiniela
     function renderQuiniela() {
       const hoy = todayISO();
-      const fechaHoy = new Date();
-      const añoActual = fechaHoy.getFullYear();
-      const mesActual = fechaHoy.getMonth();
+      
+      // Obtener mes seleccionado o usar el mes actual
+      const selectorMes = $('#selector-mes-quiniela');
+      if (!selectorMes.value) {
+        // Inicializar con el mes actual
+        const fechaHoy = new Date();
+        const año = fechaHoy.getFullYear();
+        const mes = String(fechaHoy.getMonth() + 1).padStart(2, '0');
+        selectorMes.value = `${año}-${mes}`;
+      }
+      
+      const mesSeleccionado = selectorMes.value; // Formato: "YYYY-MM"
+      const [añoSel, mesSel] = mesSeleccionado.split('-').map(Number);
 
-      // Filtrar datos del mes actual
+      // Filtrar datos del mes seleccionado
       const datosMes = state.quinielaData.filter(d => {
         const fecha = new Date(d.fecha + 'T00:00:00');
-        return fecha.getFullYear() === añoActual && fecha.getMonth() === mesActual;
+        return fecha.getFullYear() === añoSel && fecha.getMonth() === (mesSel - 1);
       });
 
       // Calcular totales del mes
@@ -1191,9 +1207,11 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         comisiones: acc.comisiones + d.comisiones
       }), { ventas: 0, tickets: 0, debitos: 0, comisiones: 0 });
 
-      // Obtener datos de hoy
-      const datosHoy = state.quinielaData.find(d => d.fecha === hoy) || 
-                       { ventas: 0, tickets: 0, debitos: 0, comisiones: 0 };
+      // Obtener datos de hoy (solo si estamos viendo el mes actual)
+      const esMesActual = mesSeleccionado === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
+      const datosHoy = esMesActual 
+        ? (state.quinielaData.find(d => d.fecha === hoy) || { ventas: 0, tickets: 0, debitos: 0, comisiones: 0 })
+        : { ventas: 0, tickets: 0, debitos: 0, comisiones: 0 };
 
       // Actualizar cards principales
       $('#quiniela-ventas-hoy').textContent = fmtMoney(datosHoy.ventas);
@@ -1348,6 +1366,11 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     $('#btn-add-cliente').addEventListener('click', abrirNuevoCliente);
     $('#buscar-clientes').addEventListener('input', (e) => renderClientes(e.target.value));
     
+    // Event listener para el selector de mes en Quiniela
+    $('#selector-mes-quiniela').addEventListener('change', () => {
+      renderQuiniela();
+    });
+    
     // Botones "Volver" al Dashboard
     $('#volver-dashboard-clientes').addEventListener('click', () => switchView('dashboard'));
     $('#volver-dashboard-quiniela').addEventListener('click', () => switchView('dashboard'));
@@ -1470,26 +1493,32 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     
     // Cerrar mes actual
     window.cerrarMesQuiniela = async function() {
-      const mesActual = new Date().toISOString().substring(0, 7); // YYYY-MM
+      // Obtener mes seleccionado del selector
+      const mesSeleccionado = $('#selector-mes-quiniela').value; // YYYY-MM
+      
+      if (!mesSeleccionado) {
+        alert('⚠️ Selecciona un mes para cerrar');
+        return;
+      }
       
       // Verificar si ya está cerrado
       const mesesCerrados = JSON.parse(localStorage.getItem('quiniela_meses_cerrados') || '{}');
-      if (mesesCerrados[mesActual]) {
+      if (mesesCerrados[mesSeleccionado]) {
         alert('⚠️ Este mes ya fue cerrado anteriormente');
         return;
       }
       
-      if (!confirm(`¿Cerrar el mes ${formatearMes(mesActual)}?\n\nEsto guardará los datos actuales como histórico y ya no podrás modificarlos.`)) {
+      if (!confirm(`¿Cerrar el mes ${formatearMes(mesSeleccionado)}?\n\nEsto guardará los datos actuales como histórico y ya no podrás modificarlos.`)) {
         return;
       }
       
-      // Calcular totales del mes
+      // Calcular totales del mes seleccionado
       const quinielaDatos = JSON.parse(localStorage.getItem('quiniela') || '{}');
       let ventasMes = 0, ticketsMes = 0, debitosMes = 0, comisionesMes = 0;
       let diasRegistrados = 0;
       
       Object.entries(quinielaDatos).forEach(([fecha, datos]) => {
-        if (fecha.startsWith(mesActual)) {
+        if (fecha.startsWith(mesSeleccionado)) {
           ventasMes += datos.ventas || 0;
           ticketsMes += datos.tickets || 0;
           debitosMes += datos.debitos || 0;
@@ -1504,7 +1533,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       }
       
       const resumenMes = {
-        mes: mesActual,
+        mes: mesSeleccionado,
         ventas: ventasMes,
         tickets: ticketsMes,
         debitos: debitosMes,
@@ -1513,10 +1542,10 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         fechaCierre: new Date().toISOString()
       };
       
-      mesesCerrados[mesActual] = resumenMes;
+      mesesCerrados[mesSeleccionado] = resumenMes;
       localStorage.setItem('quiniela_meses_cerrados', JSON.stringify(mesesCerrados));
       
-      alert(`✅ Mes ${formatearMes(mesActual)} cerrado correctamente\n\n📊 Resumen:\nVentas: ${fmtMoney(ventasMes)}\nTickets: ${ticketsMes}\nDébitos: ${fmtMoney(debitosMes)}\nComisiones: ${fmtMoney(comisionesMes)}\nDías: ${diasRegistrados}`);
+      alert(`✅ Mes ${formatearMes(mesSeleccionado)} cerrado correctamente\n\n📊 Resumen:\nVentas: ${fmtMoney(ventasMes)}\nTickets: ${ticketsMes}\nDébitos: ${fmtMoney(debitosMes)}\nComisiones: ${fmtMoney(comisionesMes)}\nDías: ${diasRegistrados}`);
     };
     
     // Abrir histórico mensual
