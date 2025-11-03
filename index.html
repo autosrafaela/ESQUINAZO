@@ -1512,17 +1512,16 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         return;
       }
       
-      // Calcular totales del mes seleccionado
-      const quinielaDatos = JSON.parse(localStorage.getItem('quiniela') || '{}');
+      // Calcular totales del mes seleccionado usando state.quinielaData
       let ventasMes = 0, ticketsMes = 0, debitosMes = 0, comisionesMes = 0;
       let diasRegistrados = 0;
       
-      Object.entries(quinielaDatos).forEach(([fecha, datos]) => {
-        if (fecha.startsWith(mesSeleccionado)) {
-          ventasMes += datos.ventas || 0;
-          ticketsMes += datos.tickets || 0;
-          debitosMes += datos.debitos || 0;
-          comisionesMes += datos.comisiones || 0;
+      state.quinielaData.forEach(registro => {
+        if (registro.fecha.startsWith(mesSeleccionado)) {
+          ventasMes += registro.ventas || 0;
+          ticketsMes += registro.tickets || 0;
+          debitosMes += registro.debitos || 0;
+          comisionesMes += registro.comisiones || 0;
           diasRegistrados++;
         }
       });
