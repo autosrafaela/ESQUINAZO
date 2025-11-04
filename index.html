@@ -440,7 +440,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         </div>
         
         <!-- 4 Cards principales -->
-        <div class="cards four-cols">
+        <div class="cards five-cols">
           <div class="card kpi">
             <h3>💰 Ventas</h3>
             <div class="kpi-mini">
@@ -462,6 +462,18 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             <div class="kpi-mini" style="margin-top:8px">
               <span class="kpi-mini-label">Mes</span>
               <div class="kpi-value" id="quiniela-tickets-mes">0</div>
+            </div>
+          </div>
+
+          <div class="card kpi">
+            <h3>🏆 Premios</h3>
+            <div class="kpi-mini">
+              <span class="kpi-mini-label">Hoy</span>
+              <div class="kpi-mini-value" id="quiniela-premios-hoy">$ 0</div>
+            </div>
+            <div class="kpi-mini" style="margin-top:8px">
+              <span class="kpi-mini-label">Mes</span>
+              <div class="kpi-value" id="quiniela-premios-mes">$ 0</div>
             </div>
           </div>
 
@@ -509,6 +521,10 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
                 <input type="number" name="tickets" placeholder="0" min="0" required/>
               </label>
               <label>
+                <span>🏆 Premios</span>
+                <input type="number" name="premios" placeholder="0" step="0.01" min="0" required/>
+              </label>
+              <label>
                 <span>💳 Débitos</span>
                 <input type="number" name="debitos" placeholder="0" step="0.01" required/>
               </label>
@@ -532,6 +548,10 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             <div class="resumen-item">
               <span class="resumen-label">🎫 Tickets</span>
               <span class="resumen-valor" id="resumen-tickets">0</span>
+            </div>
+            <div class="resumen-item">
+              <span class="resumen-label">🏆 Premios</span>
+              <span class="resumen-valor" id="resumen-premios">$ 0</span>
             </div>
             <div class="resumen-item">
               <span class="resumen-label">💳 Débitos</span>
@@ -712,6 +732,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
                 <th>Mes</th>
                 <th class="num">Ventas</th>
                 <th class="num">Tickets</th>
+                <th class="num">Premios</th>
                 <th class="num">Débitos</th>
                 <th class="num">Comisiones</th>
                 <th class="num">Días</th>
@@ -1143,6 +1164,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       const fecha = $('#form-quiniela').fecha.value;
       const ventas = Number($('#form-quiniela').ventas.value || 0);
       const tickets = Number($('#form-quiniela').tickets.value || 0);
+      const premios = Number($('#form-quiniela').premios.value || 0);
       const debitos = Number($('#form-quiniela').debitos.value || 0);
       const comisiones = Number($('#form-quiniela').comisiones.value || 0);
 
@@ -1154,6 +1176,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         fecha,
         ventas,
         tickets,
+        premios,
         debitos,
         comisiones
       };
@@ -1203,15 +1226,16 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       const totalesMes = datosMes.reduce((acc, d) => ({
         ventas: acc.ventas + d.ventas,
         tickets: acc.tickets + d.tickets,
+        premios: acc.premios + (d.premios || 0),
         debitos: acc.debitos + d.debitos,
         comisiones: acc.comisiones + d.comisiones
-      }), { ventas: 0, tickets: 0, debitos: 0, comisiones: 0 });
+      }), { ventas: 0, tickets: 0, premios: 0, debitos: 0, comisiones: 0 });
 
       // Obtener datos de hoy (solo si estamos viendo el mes actual)
       const esMesActual = mesSeleccionado === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
       const datosHoy = esMesActual 
-        ? (state.quinielaData.find(d => d.fecha === hoy) || { ventas: 0, tickets: 0, debitos: 0, comisiones: 0 })
-        : { ventas: 0, tickets: 0, debitos: 0, comisiones: 0 };
+        ? (state.quinielaData.find(d => d.fecha === hoy) || { ventas: 0, tickets: 0, premios: 0, debitos: 0, comisiones: 0 })
+        : { ventas: 0, tickets: 0, premios: 0, debitos: 0, comisiones: 0 };
 
       // Actualizar cards principales
       $('#quiniela-ventas-hoy').textContent = fmtMoney(datosHoy.ventas);
@@ -1219,6 +1243,9 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       
       $('#quiniela-tickets-hoy').textContent = datosHoy.tickets;
       $('#quiniela-tickets-mes').textContent = totalesMes.tickets;
+      
+      $('#quiniela-premios-hoy').textContent = fmtMoney(datosHoy.premios || 0);
+      $('#quiniela-premios-mes').textContent = fmtMoney(totalesMes.premios);
       
       $('#quiniela-debitos-hoy').textContent = fmtMoney(datosHoy.debitos);
       $('#quiniela-debitos-mes').textContent = fmtMoney(totalesMes.debitos);
@@ -1229,6 +1256,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       // Actualizar resumen mensual
       $('#resumen-ventas').textContent = fmtMoney(totalesMes.ventas);
       $('#resumen-tickets').textContent = totalesMes.tickets;
+      $('#resumen-premios').textContent = fmtMoney(totalesMes.premios);
       $('#resumen-debitos').textContent = fmtMoney(totalesMes.debitos);
       $('#resumen-comisiones').textContent = fmtMoney(totalesMes.comisiones);
       $('#resumen-dias').textContent = datosMes.length;
@@ -1268,6 +1296,13 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           data: datosOrdenados.map(d => d.debitos),
           borderColor: '#06b6d4',
           backgroundColor: 'rgba(6, 182, 212, 0.1)',
+          tension: 0.3
+        },
+        {
+          label: 'Premios',
+          data: datosOrdenados.map(d => d.premios || 0),
+          borderColor: '#a855f7',
+          backgroundColor: 'rgba(168, 85, 247, 0.1)',
           tension: 0.3
         },
         {
@@ -1513,13 +1548,14 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       }
       
       // Calcular totales del mes seleccionado usando state.quinielaData
-      let ventasMes = 0, ticketsMes = 0, debitosMes = 0, comisionesMes = 0;
+      let ventasMes = 0, ticketsMes = 0, premiosMes = 0, debitosMes = 0, comisionesMes = 0;
       let diasRegistrados = 0;
       
       state.quinielaData.forEach(registro => {
         if (registro.fecha.startsWith(mesSeleccionado)) {
           ventasMes += registro.ventas || 0;
           ticketsMes += registro.tickets || 0;
+          premiosMes += registro.premios || 0;
           debitosMes += registro.debitos || 0;
           comisionesMes += registro.comisiones || 0;
           diasRegistrados++;
@@ -1535,6 +1571,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         mes: mesSeleccionado,
         ventas: ventasMes,
         tickets: ticketsMes,
+        premios: premiosMes,
         debitos: debitosMes,
         comisiones: comisionesMes,
         diasRegistrados,
@@ -1544,7 +1581,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       mesesCerrados[mesSeleccionado] = resumenMes;
       localStorage.setItem('quiniela_meses_cerrados', JSON.stringify(mesesCerrados));
       
-      alert(`✅ Mes ${formatearMes(mesSeleccionado)} cerrado correctamente\n\n📊 Resumen:\nVentas: ${fmtMoney(ventasMes)}\nTickets: ${ticketsMes}\nDébitos: ${fmtMoney(debitosMes)}\nComisiones: ${fmtMoney(comisionesMes)}\nDías: ${diasRegistrados}`);
+      alert(`✅ Mes ${formatearMes(mesSeleccionado)} cerrado correctamente\n\n📊 Resumen:\nVentas: ${fmtMoney(ventasMes)}\nTickets: ${ticketsMes}\nPremios: ${fmtMoney(premiosMes)}\nDébitos: ${fmtMoney(debitosMes)}\nComisiones: ${fmtMoney(comisionesMes)}\nDías: ${diasRegistrados}`);
     };
     
     // Abrir histórico mensual
@@ -1556,13 +1593,14 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       const mesesArray = Object.values(mesesCerrados).sort((a,b) => b.mes.localeCompare(a.mes));
       
       if (mesesArray.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--sub);padding:24px">No hay meses cerrados aún</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--sub);padding:24px">No hay meses cerrados aún</td></tr>';
       } else {
         tbody.innerHTML = mesesArray.map(mes => `
           <tr>
             <td style="font-weight:700;color:var(--brand-2)">${formatearMes(mes.mes)}</td>
             <td class="num">${fmtMoney(mes.ventas)}</td>
             <td class="num">${mes.tickets}</td>
+            <td class="num">${fmtMoney(mes.premios || 0)}</td>
             <td class="num">${fmtMoney(mes.debitos)}</td>
             <td class="num">${fmtMoney(mes.comisiones)}</td>
             <td class="num">${mes.diasRegistrados}</td>
@@ -1625,16 +1663,16 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       chartComparacion = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: ['Ventas', 'Tickets', 'Débitos', 'Comisiones'],
+          labels: ['Ventas', 'Tickets', 'Premios', 'Débitos', 'Comisiones'],
           datasets: [
             {
               label: formatearMes(mes1),
-              data: [datos1.ventas, datos1.tickets, datos1.debitos, datos1.comisiones],
+              data: [datos1.ventas, datos1.tickets, datos1.premios || 0, datos1.debitos, datos1.comisiones],
               backgroundColor: '#22c55e'
             },
             {
               label: formatearMes(mes2),
-              data: [datos2.ventas, datos2.tickets, datos2.debitos, datos2.comisiones],
+              data: [datos2.ventas, datos2.tickets, datos2.premios || 0, datos2.debitos, datos2.comisiones],
               backgroundColor: '#06b6d4'
             }
           ]
