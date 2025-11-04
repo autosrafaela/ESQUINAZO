@@ -1457,7 +1457,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         return;
       }
 
-      const mensaje = `Hola *${c.nombre}*, has llegado al límite de saldo de cuenta corriente. Comunicate con la Agencia a la brevedad. Gracias !`;
+      const mensaje = `Hola *${c.nombre}* !\nTe informamos que tu cuenta corriente ha alcanzado el límite de saldo disponible. Te solicitamos comunicarte con la Agencia a la brevedad.\nMuchas gracias.`;
 
       const url = `https://api.whatsapp.com/send?phone=${sanitizePhone(c.whatsapp)}&text=${encodeURIComponent(mensaje)}`;
       window.open(url, '_blank');
