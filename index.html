@@ -24,6 +24,7 @@
   --border:#1f2937;
   --shadow: 0 6px 24px rgba(0,0,0,.35);
   --radius:16px;
+  --mora:#f97316;
 }
 
 *{box-sizing:border-box}
@@ -124,6 +125,7 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
 }
 @media(min-width:1024px){
   .cards.five-cols{grid-template-columns: repeat(5, 1fr);}
+  .cards.six-cols{grid-template-columns: repeat(6, 1fr);}
   .cards.four-cols{grid-template-columns: repeat(4, 1fr);}
 }
 .card{
@@ -133,10 +135,20 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
   padding:16px;
   box-shadow: var(--shadow);
 }
+.card.mora-alert{
+  border-color: var(--mora);
+  background: rgba(249,115,22,0.08);
+  animation: pulse-mora 2s infinite;
+}
+@keyframes pulse-mora {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(249,115,22,0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(249,115,22,0); }
+}
 .kpi h3{margin:0 0 6px; color:var(--sub); font-weight:500; font-size:14px}
 .kpi-value{font-size:28px; margin:4px 0 0; font-weight:800; color:var(--brand-2)}
 .kpi-value.danger{color:var(--danger)}
 .kpi-value.success{color:var(--ok)}
+.kpi-value.mora{color:var(--mora)}
 
 .section{margin-top:22px}
 .section h3{margin:0 0 10px; font-size:18px}
@@ -157,6 +169,7 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
 .btn.primary{background:var(--brand-2); color:#001217; border-color:transparent; font-weight:700}
 .btn.success{background:var(--ok); color:#00170f; border-color:transparent; font-weight:700; text-decoration:none; display:inline-block}
 .btn.warning{background:var(--warning); color:#1b1000; border-color:transparent; font-weight:700}
+.btn.mora{background:var(--mora); color:#fff; border-color:transparent; font-weight:700}
 .btn.light{background:transparent; color:var(--sub)}
 .btn.danger{background:var(--danger); color:#fff; border-color:transparent}
 .btn:disabled{opacity:.5; cursor:not-allowed}
@@ -182,6 +195,7 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
   padding:12px;
 }
 .item:hover{border-color:var(--muted)}
+.item.mora-item{border-color:var(--mora); background:rgba(249,115,22,0.05)}
 .item .meta{display:flex; flex-direction:column; gap:4px; flex:1}
 .item .title{font-weight:700; font-size:16px}
 .item .sub{display:flex; gap:6px; flex-wrap:wrap}
@@ -191,6 +205,7 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
 }
 .badge.red{color:#fff; background:var(--danger); border-color:transparent}
 .badge.amber{color:#1b1000; background:var(--warning); border-color:transparent}
+.badge.mora{color:#fff; background:var(--mora); border-color:transparent}
 
 .toolbar{
   display:flex; gap:10px; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap;
@@ -205,6 +220,20 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
 .ficha-header{display:flex; gap:12px; align-items:flex-start; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap}
 .ficha-titulos h2{margin:0; font-size:24px}
 .saldo{margin:4px 0 0; color:var(--sub); font-weight:700; font-size:16px}
+
+/* Alerta de mora en ficha */
+.mora-banner{
+  display:none;
+  background:rgba(249,115,22,0.12);
+  border:1px solid var(--mora);
+  border-radius:12px;
+  padding:12px 16px;
+  margin-bottom:14px;
+  font-size:14px;
+  color:#ffdcc0;
+}
+.mora-banner.visible{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.mora-banner strong{color:var(--mora)}
 
 .table-wrap{overflow:auto; border:1px solid var(--border); border-radius:12px; background:var(--panel)}
 .table{width:100%; border-collapse:collapse; min-width:600px}
@@ -249,7 +278,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
 }
 .modal-body{padding:20px; max-height:70vh; overflow-y:auto}
 
-/* ===== ESTILOS NUEVOS PARA QUINIELA ===== */
+/* ===== ESTILOS QUINIELA ===== */
 .quiniela-layout{
   display:grid; 
   gap:16px;
@@ -378,9 +407,10 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     </nav>
 
     <main id="app">
-      <!-- DASHBOARD (ACTUALIZADO CON NUEVAS CARDS) -->
+      <!-- DASHBOARD -->
       <div id="dashboard" class="view is-active">
-        <div class="cards five-cols">
+        <!-- KPIs: 6 columnas -->
+        <div class="cards six-cols">
           <div class="card kpi">
             <h3>Fiado Total</h3>
             <div class="kpi-value danger" id="kpi-fiado">$ 0</div>
@@ -389,11 +419,15 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             <h3>Clientes con Deuda 👆</h3>
             <div class="kpi-value" id="kpi-condeuda">0</div>
           </div>
+          <!-- NUEVA CARD: MORA +20 DÍAS -->
+          <div class="card kpi mora-alert" style="cursor:pointer" onclick="filtrarMora20()">
+            <h3>⏰ Mora +20 días 👆</h3>
+            <div class="kpi-value mora" id="kpi-mora20">0</div>
+          </div>
           <div class="card kpi" style="cursor:pointer" onclick="filtrarDeudasVencidas()">
             <h3>Deudas Vencidas 👆</h3>
             <div class="kpi-value danger" id="kpi-vencidas">0</div>
           </div>
-          <!-- NUEVAS CARDS -->
           <div class="card kpi">
             <h3>Total Clientes</h3>
             <div class="kpi-value success" id="kpi-total-clientes">0</div>
@@ -407,6 +441,12 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         <section class="section">
           <h3>Acciones Rápidas</h3>
           <button class="btn primary" id="btn-nuevo-cliente-rapido">+ Añadir Cliente</button>
+        </section>
+
+        <!-- NUEVA SECCIÓN: MORA +20 DÍAS -->
+        <section class="section" id="seccion-mora20">
+          <h3 style="color:var(--mora)">⏰ Clientes en Mora (+20 días)</h3>
+          <div class="list" id="lista-mora20"></div>
         </section>
 
         <section class="section">
@@ -427,7 +467,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         <div class="list empty-hint" id="lista-clientes"></div>
       </div>
 
-      <!-- NUEVA SECCIÓN: QUINIELA -->
+      <!-- QUINIELA -->
       <div id="quiniela" class="view">
         <div class="toolbar">
           <button class="btn light" id="volver-dashboard-quiniela">← Volver</button>
@@ -439,7 +479,6 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           </div>
         </div>
         
-        <!-- 4 Cards principales -->
         <div class="cards five-cols">
           <div class="card kpi">
             <h3>💰 Ventas</h3>
@@ -502,9 +541,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           </div>
         </div>
 
-        <!-- Layout: Formulario + Resumen -->
         <div class="quiniela-layout" style="margin-top:24px">
-          <!-- Formulario de carga diaria -->
           <div class="form-quiniela">
             <h3>📅 Cargar Datos Diarios</h3>
             <form id="form-quiniela" class="grid">
@@ -538,7 +575,6 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             </form>
           </div>
 
-          <!-- Resumen Mensual -->
           <div class="resumen-mensual">
             <h3>📊 Resumen del Mes</h3>
             <div class="resumen-item">
@@ -568,7 +604,6 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           </div>
         </div>
 
-        <!-- Gráfico -->
         <div class="chart-container">
           <h3>📈 Evolución Mensual</h3>
           <div class="chart-wrapper">
@@ -576,7 +611,6 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           </div>
         </div>
 
-        <!-- NUEVAS ACCIONES -->
         <div class="section">
           <div class="actions-row">
             <button class="btn danger" onclick="cerrarMesQuiniela()">🔒 Cerrar Mes</button>
@@ -598,7 +632,18 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             <button class="btn" onclick="abrirEditarCliente(state.fichaClienteId)">Editar</button>
             <button class="btn warning" id="btn-compartir-ficha">📤 Enviar Resumen</button>
             <button class="btn" id="btn-enviar-advertencia" style="background:#a855f7;border-color:#a855f7">⚠️ Enviar Advertencia</button>
+            <!-- NUEVO BOTÓN MORA -->
+            <button class="btn mora" id="btn-interes-mora" style="display:none">🔴 Interés por Mora (15%)</button>
             <a class="btn success" id="btn-whatsapp" target="_blank" style="display:none">💬 WhatsApp</a>
+          </div>
+        </div>
+
+        <!-- BANNER DE MORA (aparece automáticamente si aplica) -->
+        <div class="mora-banner" id="mora-banner">
+          <span style="font-size:20px">⏰</span>
+          <div>
+            <strong id="mora-banner-texto">Esta deuda lleva más de 20 días de atraso.</strong>
+            <span style="margin-left:8px;color:var(--sub);font-size:13px">Podés notificar al cliente con el botón 🔴</span>
           </div>
         </div>
 
@@ -799,11 +844,10 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     const $ = s => document.querySelector(s);
     const $$ = s => document.querySelectorAll(s);
 
-    // Estado global
     const state = {
       clientes: [],
       fichaClienteId: null,
-      quinielaData: [] // Datos de quiniela
+      quinielaData: []
     };
 
     // Login
@@ -835,7 +879,6 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
 
     window.logout = () => signOut(auth);
 
-    // Firestore - Clientes
     async function cargarDatos() {
       const snap = await getDocs(collection(db, 'clientes'));
       state.clientes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -849,7 +892,6 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       await deleteDoc(doc(db, 'clientes', id));
     }
 
-    // Firestore - Quiniela
     async function cargarQuinielaData() {
       const snap = await getDocs(collection(db, 'quiniela'));
       state.quinielaData = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -885,20 +927,37 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       return Math.floor((hoy - primerFiado) / (1000 * 60 * 60 * 24));
     }
 
-    // Renderizado Dashboard (CON NUEVAS CARDS)
+    // ============================================================
+    // NUEVA FUNCIÓN: verificar si tiene mora de 20+ días
+    // ============================================================
+    function tieneMora20(c) {
+      return saldoCliente(c) > 0 && diasVencimiento(c) >= 20;
+    }
+
+    // Renderizado Dashboard
     function renderDashboard() {
       const total = state.clientes.reduce((s, c) => s + saldoCliente(c), 0);
       const conDeuda = state.clientes.filter(c => saldoCliente(c) > 0).length;
       const vencidas = state.clientes.filter(c => saldoCliente(c) > 0 && diasVencimiento(c) > 30);
 
+      // NUEVO: clientes con mora 20+ días
+      const mora20 = state.clientes.filter(tieneMora20);
+
       $('#kpi-fiado').textContent = fmtMoney(total);
       $('#kpi-condeuda').textContent = conDeuda;
       $('#kpi-vencidas').textContent = vencidas.length;
-      
-      // NUEVAS CARDS
+      $('#kpi-mora20').textContent = mora20.length;
+
+      // Efecto visual: si hay mora, la card pulsa
+      const cardMora = $('#kpi-mora20').closest('.card');
+      if (mora20.length > 0) {
+        cardMora.classList.add('mora-alert');
+      } else {
+        cardMora.classList.remove('mora-alert');
+      }
+
+      // Nuevas cards
       $('#kpi-total-clientes').textContent = state.clientes.length;
-      
-      // Clientes nuevos del mes actual
       const hoy = new Date();
       const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
       const clientesNuevos = state.clientes.filter(c => {
@@ -908,6 +967,38 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       }).length;
       $('#kpi-clientes-nuevos').textContent = clientesNuevos;
 
+      // --- Lista Mora 20 días ---
+      const listaMora20 = $('#lista-mora20');
+      listaMora20.innerHTML = '';
+      if (!mora20.length) {
+        listaMora20.innerHTML = '<div style="color:var(--muted); padding:12px">✅ No hay clientes con mora de más de 20 días</div>';
+      } else {
+        mora20.forEach(c => {
+          const saldo = saldoCliente(c);
+          const dias = diasVencimiento(c);
+          const interes = saldo * 0.15;
+          const total = saldo + interes;
+          const div = document.createElement('div');
+          div.className = 'item mora-item';
+          div.innerHTML = `
+            <div class="meta">
+              <div class="title">${c.nombre}</div>
+              <div class="sub">
+                <span class="badge red">${fmtMoney(saldo)}</span>
+                <span class="badge mora">⏰ ${dias} días</span>
+                <span class="badge amber">+15% = ${fmtMoney(total)}</span>
+              </div>
+            </div>
+            <div class="actions-row">
+              <button class="btn mora" onclick="enviarInteresMora('${c.id}')">🔴 Notificar</button>
+              <button class="btn success" onclick="abrirFicha('${c.id}')">Ver Ficha</button>
+            </div>
+          `;
+          listaMora20.appendChild(div);
+        });
+      }
+
+      // --- Lista Vencidas (30+ días) ---
       const listaVencidas = $('#lista-vencidas');
       listaVencidas.innerHTML = '';
       if (!vencidas.length) {
@@ -940,13 +1031,15 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       lista.innerHTML = '';
       filtrados.forEach(c => {
         const saldo = saldoCliente(c);
+        const mora = tieneMora20(c);
         const div = document.createElement('div');
-        div.className = 'item';
+        div.className = 'item' + (mora ? ' mora-item' : '');
         div.innerHTML = `
           <div class="meta">
             <div class="title">${c.nombre}</div>
             <div class="sub">
               ${saldo > 0 ? `<span class="badge red">${fmtMoney(saldo)}</span>` : '<span class="badge">Al día</span>'}
+              ${mora ? `<span class="badge mora">⏰ ${diasVencimiento(c)} días</span>` : ''}
             </div>
           </div>
           <div class="actions-row">
@@ -974,6 +1067,25 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         $('#btn-whatsapp').style.display = 'inline-block';
       } else {
         $('#btn-whatsapp').style.display = 'none';
+      }
+
+      // ============================================================
+      // NUEVA LÓGICA: mostrar botón e banner de mora si aplica
+      // ============================================================
+      const dias = diasVencimiento(c);
+      const btnMora = $('#btn-interes-mora');
+      const banner = $('#mora-banner');
+
+      if (tieneMora20(c)) {
+        const interes = saldo * 0.15;
+        const totalConInteres = saldo + interes;
+        btnMora.style.display = 'inline-block';
+        banner.classList.add('visible');
+        $('#mora-banner-texto').textContent =
+          `⚠️ Esta deuda lleva ${dias} días de atraso. Deuda: ${fmtMoney(saldo)} → Con 15% de interés: ${fmtMoney(totalConInteres)}`;
+      } else {
+        btnMora.style.display = 'none';
+        banner.classList.remove('visible');
       }
       
       renderHistorial(c);
@@ -1063,10 +1175,10 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       $('#confirm-msg').textContent = `¿Eliminar a "${c.nombre}" y todo su historial?`;
       $('#modal-confirm').showModal();
       $('#modal-confirm').onsubmit = async (e) => {
-        e.preventDefault(); // CRÍTICO: Prevenir recarga de página
+        e.preventDefault();
         state.clientes = state.clientes.filter(x => x.id !== id);
         await eliminarCliente(id);
-        $('#modal-confirm').close(); // Cerrar modal
+        $('#modal-confirm').close();
         if (state.fichaClienteId === id) {
           state.fichaClienteId = null;
           switchView('clientes');
@@ -1148,18 +1260,51 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       $('#confirm-msg').textContent = `¿Eliminar el movimiento "${m.descripcion || m.tipo}"?`;
       $('#modal-confirm').showModal();
       $('#modal-confirm').onsubmit = async (e) => {
-        e.preventDefault(); // CRÍTICO: Prevenir recarga de página
+        e.preventDefault();
         c.movs = c.movs.filter(x => x.id !== movId);
         await guardarCliente(c);
-        $('#modal-confirm').close(); // Cerrar modal
+        $('#modal-confirm').close();
         renderHistorial(c);
         renderAll();
       };
     };
 
-    // ===== NUEVA FUNCIONALIDAD: QUINIELA =====
-    
-    // Formulario de carga diaria
+    // ============================================================
+    // NUEVA FUNCIÓN: Enviar mensaje de interés por mora (15%)
+    // Puede llamarse desde la ficha o desde el dashboard
+    // ============================================================
+    window.enviarInteresMora = function(clienteId) {
+      const id = clienteId || state.fichaClienteId;
+      const c = state.clientes.find(x => x.id === id);
+      if (!c) return;
+
+      if (!c.whatsapp) {
+        alert('⚠️ Este cliente no tiene WhatsApp configurado.\n\nPodés agregarlo editando el cliente.');
+        return;
+      }
+
+      const saldo = saldoCliente(c);
+      const dias = diasVencimiento(c);
+      const interes = saldo * 0.15;
+      const totalConInteres = saldo + interes;
+
+      const mensaje =
+        `Hola *${c.nombre}*,\n\n` +
+        `Le informamos desde *El Esquinazo* que su deuda de *${fmtMoney(saldo)}* lleva *${dias} días de atraso*.\n\n` +
+        `⚠️ Por retraso mayor a 20 días, se aplica un recargo del *15% de interés por mora*.\n\n` +
+        `📊 *Detalle:*\n` +
+        `• Deuda original: ${fmtMoney(saldo)}\n` +
+        `• Interés por mora (15%): ${fmtMoney(interes)}\n` +
+        `• ─────────────────────\n` +
+        `• *Total a pagar: ${fmtMoney(totalConInteres)}*\n\n` +
+        `Por favor, regularice su situación a la brevedad.\n\n` +
+        `¡Muchas gracias! 🙏`;
+
+      const url = `https://api.whatsapp.com/send?phone=${sanitizePhone(c.whatsapp)}&text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
+    };
+
+    // Quiniela
     $('#form-quiniela').addEventListener('submit', async (e) => {
       e.preventDefault();
       const fecha = $('#form-quiniela').fecha.value;
@@ -1171,21 +1316,11 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
 
       if (!fecha) return;
 
-      const id = fecha; // Usar fecha como ID único
-      const registro = {
-        id,
-        fecha,
-        ventas,
-        tickets,
-        premios,
-        debitos,
-        comisiones
-      };
+      const id = fecha;
+      const registro = { id, fecha, ventas, tickets, premios, debitos, comisiones };
 
-      // Guardar en Firebase
       await guardarQuinielaRegistro(registro);
       
-      // Actualizar estado local
       const idx = state.quinielaData.findIndex(x => x.id === id);
       if (idx >= 0) {
         state.quinielaData[idx] = registro;
@@ -1200,30 +1335,25 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       alert('✅ Datos guardados correctamente');
     });
 
-    // Renderizar sección Quiniela
     function renderQuiniela() {
       const hoy = todayISO();
       
-      // Obtener mes seleccionado o usar el mes actual
       const selectorMes = $('#selector-mes-quiniela');
       if (!selectorMes.value) {
-        // Inicializar con el mes actual
         const fechaHoy = new Date();
         const año = fechaHoy.getFullYear();
         const mes = String(fechaHoy.getMonth() + 1).padStart(2, '0');
         selectorMes.value = `${año}-${mes}`;
       }
       
-      const mesSeleccionado = selectorMes.value; // Formato: "YYYY-MM"
+      const mesSeleccionado = selectorMes.value;
       const [añoSel, mesSel] = mesSeleccionado.split('-').map(Number);
 
-      // Filtrar datos del mes seleccionado
       const datosMes = state.quinielaData.filter(d => {
         const fecha = new Date(d.fecha + 'T00:00:00');
         return fecha.getFullYear() === añoSel && fecha.getMonth() === (mesSel - 1);
       });
 
-      // Calcular totales del mes
       const totalesMes = datosMes.reduce((acc, d) => ({
         ventas: acc.ventas + d.ventas,
         tickets: acc.tickets + d.tickets,
@@ -1232,29 +1362,22 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         comisiones: acc.comisiones + d.comisiones
       }), { ventas: 0, tickets: 0, premios: 0, debitos: 0, comisiones: 0 });
 
-      // Obtener datos de hoy (solo si estamos viendo el mes actual)
       const esMesActual = mesSeleccionado === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
       const datosHoy = esMesActual 
         ? (state.quinielaData.find(d => d.fecha === hoy) || { ventas: 0, tickets: 0, premios: 0, debitos: 0, comisiones: 0 })
         : { ventas: 0, tickets: 0, premios: 0, debitos: 0, comisiones: 0 };
 
-      // Actualizar cards principales
       $('#quiniela-ventas-hoy').textContent = fmtMoney(datosHoy.ventas);
       $('#quiniela-ventas-mes').textContent = fmtMoney(totalesMes.ventas);
-      
       $('#quiniela-tickets-hoy').textContent = datosHoy.tickets;
       $('#quiniela-tickets-mes').textContent = totalesMes.tickets;
-      
       $('#quiniela-premios-hoy').textContent = fmtMoney(datosHoy.premios || 0);
       $('#quiniela-premios-mes').textContent = fmtMoney(totalesMes.premios);
-      
       $('#quiniela-debitos-hoy').textContent = fmtMoney(datosHoy.debitos);
       $('#quiniela-debitos-mes').textContent = fmtMoney(totalesMes.debitos);
-      
       $('#quiniela-comisiones-hoy').textContent = fmtMoney(datosHoy.comisiones);
       $('#quiniela-comisiones-mes').textContent = fmtMoney(totalesMes.comisiones);
 
-      // Actualizar resumen mensual
       $('#resumen-ventas').textContent = fmtMoney(totalesMes.ventas);
       $('#resumen-tickets').textContent = totalesMes.tickets;
       $('#resumen-premios').textContent = fmtMoney(totalesMes.premios);
@@ -1262,22 +1385,16 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       $('#resumen-comisiones').textContent = fmtMoney(totalesMes.comisiones);
       $('#resumen-dias').textContent = datosMes.length;
 
-      // Actualizar gráfico
       renderGraficoQuiniela(datosMes);
 
-      // Prellenar fecha de hoy en el formulario
       if (!$('#form-quiniela').fecha.value) {
         $('#form-quiniela').fecha.value = hoy;
       }
     }
 
-    // Gráfico de Quiniela
     let chartQuiniela = null;
     function renderGraficoQuiniela(datos) {
-      // Ordenar por fecha
-      const datosOrdenados = [...datos].sort((a, b) => 
-        new Date(a.fecha) - new Date(b.fecha)
-      );
+      const datosOrdenados = [...datos].sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
 
       const labels = datosOrdenados.map(d => {
         const fecha = new Date(d.fecha + 'T00:00:00');
@@ -1324,10 +1441,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       ];
 
       const ctx = $('#chart-quiniela');
-      
-      if (chartQuiniela) {
-        chartQuiniela.destroy();
-      }
+      if (chartQuiniela) { chartQuiniela.destroy(); }
 
       chartQuiniela = new Chart(ctx, {
         type: 'line',
@@ -1335,17 +1449,9 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          interaction: {
-            mode: 'index',
-            intersect: false
-          },
+          interaction: { mode: 'index', intersect: false },
           plugins: {
-            legend: {
-              labels: {
-                color: '#cbd5e1',
-                font: { size: 12 }
-              }
-            },
+            legend: { labels: { color: '#cbd5e1', font: { size: 12 } } },
             tooltip: {
               backgroundColor: '#111827',
               titleColor: '#e5e7eb',
@@ -1355,31 +1461,18 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             }
           },
           scales: {
-            x: {
-              grid: { color: '#1f2937' },
-              ticks: { color: '#cbd5e1' }
-            },
+            x: { grid: { color: '#1f2937' }, ticks: { color: '#cbd5e1' } },
             y: {
               type: 'linear',
               position: 'left',
               grid: { color: '#1f2937' },
-              ticks: { 
-                color: '#cbd5e1',
-                callback: function(value) {
-                  return '$ ' + value.toLocaleString('es-AR');
-                }
-              }
+              ticks: { color: '#cbd5e1', callback: v => '$ ' + v.toLocaleString('es-AR') }
             },
             y1: {
               type: 'linear',
               position: 'right',
               grid: { display: false },
-              ticks: { 
-                color: '#cbd5e1',
-                callback: function(value) {
-                  return value;
-                }
-              }
+              ticks: { color: '#cbd5e1' }
             }
           }
         }
@@ -1389,11 +1482,8 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     // Eventos
     $$('.tab').forEach(btn => btn.addEventListener('click', () => {
       switchView(btn.dataset.tab);
-      if (btn.dataset.tab === 'quiniela') {
-        renderQuiniela();
-      }
+      if (btn.dataset.tab === 'quiniela') renderQuiniela();
       if (btn.dataset.tab === 'clientes') {
-        // Resetear búsqueda y mostrar TODOS los clientes
         $('#buscar-clientes').value = '';
         renderClientes('');
       }
@@ -1401,16 +1491,9 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     $('#btn-nuevo-cliente-rapido').addEventListener('click', abrirNuevoCliente);
     $('#btn-add-cliente').addEventListener('click', abrirNuevoCliente);
     $('#buscar-clientes').addEventListener('input', (e) => renderClientes(e.target.value));
-    
-    // Event listener para el selector de mes en Quiniela
-    $('#selector-mes-quiniela').addEventListener('change', () => {
-      renderQuiniela();
-    });
-    
-    // Botones "Volver" al Dashboard
+    $('#selector-mes-quiniela').addEventListener('change', () => renderQuiniela());
     $('#volver-dashboard-clientes').addEventListener('click', () => switchView('dashboard'));
     $('#volver-dashboard-quiniela').addEventListener('click', () => switchView('dashboard'));
-    
     $('#volver-clientes').addEventListener('click', () => {
       $('#buscar-clientes').value = '';
       renderClientes('');
@@ -1420,30 +1503,29 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     $('#btn-registrar-jugada').addEventListener('click', () => abrirNuevoMov('jugada'));
     $('#btn-compartir-ficha').addEventListener('click', compartirFicha);
     $('#btn-enviar-advertencia').addEventListener('click', enviarAdvertencia);
+
+    // NUEVO: evento del botón mora en la ficha
+    $('#btn-interes-mora').addEventListener('click', () => enviarInteresMora(state.fichaClienteId));
+
     $('#year').textContent = new Date().getFullYear();
 
     function compartirFicha() {
       const c = state.clientes.find(x => x.id === state.fichaClienteId);
       if (!c) return;
-      
       if (!c.whatsapp) {
         alert('⚠️ Este cliente no tiene WhatsApp configurado.\n\nPuedes agregarlo editando el cliente.');
         return;
       }
-
       const saldo = saldoCliente(c);
       const movs = [...(c.movs || [])].sort((a, b) => parseDate(b.fecha) - parseDate(a.fecha));
       const ultimos = movs.slice(0, 10);
-      
       let resumen = ultimos.map(m => {
         const tipo = m.tipo === 'jugada' ? '🎲 Jugada' : '💰 Pago';
         const monto = m.tipo === 'jugada' ? fmtMoney(m.debe) : fmtMoney(m.haber);
         const desc = m.descripcion ? ` - ${m.descripcion}` : '';
         return `${fmtFecha(m.fecha)}: ${tipo}${desc} ${monto}`;
       }).join('\n');
-
       const mensaje = `Hola *${c.nombre}*,\n\nTe envío el resumen de tu cuenta de *El Esquinazo*:\n\n${resumen}\n\n━━━━━━━━━━━━━━\n*SALDO ACTUAL: ${fmtMoney(saldo)}*\n━━━━━━━━━━━━━━\n\n${saldo > 0 ? '⚠️ Por favor coordina el pago lo antes posible.' : '✅ Tu cuenta está al día.'}\n\n¡Gracias!`;
-
       const url = `https://api.whatsapp.com/send?phone=${sanitizePhone(c.whatsapp)}&text=${encodeURIComponent(mensaje)}`;
       window.open(url, '_blank');
     }
@@ -1451,14 +1533,11 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     function enviarAdvertencia() {
       const c = state.clientes.find(x => x.id === state.fichaClienteId);
       if (!c) return;
-      
       if (!c.whatsapp) {
         alert('⚠️ Este cliente no tiene WhatsApp configurado.\n\nPuedes agregarlo editando el cliente.');
         return;
       }
-
       const mensaje = `Hola *${c.nombre}* !\nTe informamos que tu cuenta corriente ha alcanzado el límite de saldo disponible. Te solicitamos comunicarte con la Agencia a la brevedad.\nMuchas gracias.`;
-
       const url = `https://api.whatsapp.com/send?phone=${sanitizePhone(c.whatsapp)}&text=${encodeURIComponent(mensaje)}`;
       window.open(url, '_blank');
     }
@@ -1468,27 +1547,26 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       renderClientes($('#buscar-clientes').value || '');
     }
 
-    // Funciones de filtrado desde dashboard
     window.filtrarClientesConDeuda = function() {
       switchView('clientes');
       const clientesConDeuda = state.clientes.filter(c => saldoCliente(c) > 0);
       const lista = $('#lista-clientes');
       lista.innerHTML = '';
-      
-      if (clientesConDeuda.length === 0) {
+      if (!clientesConDeuda.length) {
         lista.innerHTML = '<div style="color:var(--muted); padding:12px">✅ No hay clientes con deuda</div>';
         return;
       }
-      
       clientesConDeuda.forEach(c => {
         const saldo = saldoCliente(c);
+        const mora = tieneMora20(c);
         const div = document.createElement('div');
-        div.className = 'item';
+        div.className = 'item' + (mora ? ' mora-item' : '');
         div.innerHTML = `
           <div class="meta">
             <div class="title">${c.nombre}</div>
             <div class="sub">
               <span class="badge red">${fmtMoney(saldo)}</span>
+              ${mora ? `<span class="badge mora">⏰ ${diasVencimiento(c)} días</span>` : ''}
             </div>
           </div>
           <div class="actions-row">
@@ -1499,7 +1577,6 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         `;
         lista.appendChild(div);
       });
-      
       $('#buscar-clientes').value = '';
     };
 
@@ -1508,12 +1585,10 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       const vencidas = state.clientes.filter(c => saldoCliente(c) > 0 && diasVencimiento(c) > 30);
       const lista = $('#lista-clientes');
       lista.innerHTML = '';
-      
-      if (vencidas.length === 0) {
+      if (!vencidas.length) {
         lista.innerHTML = '<div style="color:var(--muted); padding:12px">✅ No hay deudas vencidas</div>';
         return;
       }
-      
       vencidas.forEach(c => {
         const saldo = saldoCliente(c);
         const dias = diasVencimiento(c);
@@ -1535,207 +1610,141 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         `;
         lista.appendChild(div);
       });
-      
       $('#buscar-clientes').value = '';
     };
 
-    // =============================================
-    // FUNCIONES QUINIELA - CERRAR MES E HISTÓRICO
-    // =============================================
-    
-    // Cerrar mes actual
+    // NUEVO: filtrar clientes con mora 20+ días desde la card del dashboard
+    window.filtrarMora20 = function() {
+      switchView('clientes');
+      const mora20 = state.clientes.filter(tieneMora20);
+      const lista = $('#lista-clientes');
+      lista.innerHTML = '';
+      if (!mora20.length) {
+        lista.innerHTML = '<div style="color:var(--muted); padding:12px">✅ No hay clientes con mora de más de 20 días</div>';
+        return;
+      }
+      mora20.forEach(c => {
+        const saldo = saldoCliente(c);
+        const dias = diasVencimiento(c);
+        const interes = saldo * 0.15;
+        const totalConInteres = saldo + interes;
+        const div = document.createElement('div');
+        div.className = 'item mora-item';
+        div.innerHTML = `
+          <div class="meta">
+            <div class="title">${c.nombre}</div>
+            <div class="sub">
+              <span class="badge red">${fmtMoney(saldo)}</span>
+              <span class="badge mora">⏰ ${dias} días</span>
+              <span class="badge amber">Con interés: ${fmtMoney(totalConInteres)}</span>
+            </div>
+          </div>
+          <div class="actions-row">
+            <button class="btn mora" onclick="enviarInteresMora('${c.id}')">🔴 Notificar</button>
+            <button class="btn" onclick="abrirFicha('${c.id}')">Ver Ficha</button>
+          </div>
+        `;
+        lista.appendChild(div);
+      });
+      $('#buscar-clientes').value = '';
+    };
+
+    // Quiniela: Cerrar Mes
     window.cerrarMesQuiniela = async function() {
-      // Obtener mes seleccionado del selector
-      const mesSeleccionado = $('#selector-mes-quiniela').value; // YYYY-MM
-      
-      if (!mesSeleccionado) {
-        alert('⚠️ Selecciona un mes para cerrar');
-        return;
-      }
-      
-      // Verificar si ya está cerrado
+      const mesSeleccionado = $('#selector-mes-quiniela').value;
+      if (!mesSeleccionado) { alert('⚠️ Selecciona un mes para cerrar'); return; }
       const mesesCerrados = JSON.parse(localStorage.getItem('quiniela_meses_cerrados') || '{}');
-      if (mesesCerrados[mesSeleccionado]) {
-        alert('⚠️ Este mes ya fue cerrado anteriormente');
-        return;
-      }
+      if (mesesCerrados[mesSeleccionado]) { alert('⚠️ Este mes ya fue cerrado anteriormente'); return; }
+      if (!confirm(`¿Cerrar el mes ${formatearMes(mesSeleccionado)}?\n\nEsto guardará los datos actuales como histórico.`)) return;
       
-      if (!confirm(`¿Cerrar el mes ${formatearMes(mesSeleccionado)}?\n\nEsto guardará los datos actuales como histórico y ya no podrás modificarlos.`)) {
-        return;
-      }
-      
-      // Calcular totales del mes seleccionado usando state.quinielaData
-      let ventasMes = 0, ticketsMes = 0, premiosMes = 0, debitosMes = 0, comisionesMes = 0;
-      let diasRegistrados = 0;
-      
-      state.quinielaData.forEach(registro => {
-        if (registro.fecha.startsWith(mesSeleccionado)) {
-          ventasMes += registro.ventas || 0;
-          ticketsMes += registro.tickets || 0;
-          premiosMes += registro.premios || 0;
-          debitosMes += registro.debitos || 0;
-          comisionesMes += registro.comisiones || 0;
+      let ventasMes = 0, ticketsMes = 0, premiosMes = 0, debitosMes = 0, comisionesMes = 0, diasRegistrados = 0;
+      state.quinielaData.forEach(r => {
+        if (r.fecha.startsWith(mesSeleccionado)) {
+          ventasMes += r.ventas || 0;
+          ticketsMes += r.tickets || 0;
+          premiosMes += r.premios || 0;
+          debitosMes += r.debitos || 0;
+          comisionesMes += r.comisiones || 0;
           diasRegistrados++;
         }
       });
+      if (!diasRegistrados) { alert('⚠️ No hay datos registrados para este mes'); return; }
       
-      if (diasRegistrados === 0) {
-        alert('⚠️ No hay datos registrados para este mes');
-        return;
-      }
-      
-      const resumenMes = {
-        mes: mesSeleccionado,
-        ventas: ventasMes,
-        tickets: ticketsMes,
-        premios: premiosMes,
-        debitos: debitosMes,
-        comisiones: comisionesMes,
-        diasRegistrados,
-        fechaCierre: new Date().toISOString()
-      };
-      
-      mesesCerrados[mesSeleccionado] = resumenMes;
+      mesesCerrados[mesSeleccionado] = { mes: mesSeleccionado, ventas: ventasMes, tickets: ticketsMes, premios: premiosMes, debitos: debitosMes, comisiones: comisionesMes, diasRegistrados, fechaCierre: new Date().toISOString() };
       localStorage.setItem('quiniela_meses_cerrados', JSON.stringify(mesesCerrados));
-      
-      alert(`✅ Mes ${formatearMes(mesSeleccionado)} cerrado correctamente\n\n📊 Resumen:\nVentas: ${fmtMoney(ventasMes)}\nTickets: ${ticketsMes}\nPremios: ${fmtMoney(premiosMes)}\nDébitos: ${fmtMoney(debitosMes)}\nComisiones: ${fmtMoney(comisionesMes)}\nDías: ${diasRegistrados}`);
+      alert(`✅ Mes ${formatearMes(mesSeleccionado)} cerrado correctamente\n\nVentas: ${fmtMoney(ventasMes)}\nTickets: ${ticketsMes}\nPremios: ${fmtMoney(premiosMes)}\nDébitos: ${fmtMoney(debitosMes)}\nComisiones: ${fmtMoney(comisionesMes)}\nDías: ${diasRegistrados}`);
     };
-    
-    // Abrir histórico mensual
+
     window.abrirHistoricoMensual = function() {
-      const modal = $('#modal-historico');
       const tbody = $('#tbody-historico');
-      
       const mesesCerrados = JSON.parse(localStorage.getItem('quiniela_meses_cerrados') || '{}');
       const mesesArray = Object.values(mesesCerrados).sort((a,b) => b.mes.localeCompare(a.mes));
-      
-      if (mesesArray.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--sub);padding:24px">No hay meses cerrados aún</td></tr>';
-      } else {
-        tbody.innerHTML = mesesArray.map(mes => `
-          <tr>
-            <td style="font-weight:700;color:var(--brand-2)">${formatearMes(mes.mes)}</td>
-            <td class="num">${fmtMoney(mes.ventas)}</td>
-            <td class="num">${mes.tickets}</td>
-            <td class="num">${fmtMoney(mes.premios || 0)}</td>
-            <td class="num">${fmtMoney(mes.debitos)}</td>
-            <td class="num">${fmtMoney(mes.comisiones)}</td>
-            <td class="num">${mes.diasRegistrados}</td>
-          </tr>
-        `).join('');
-      }
-      
-      modal.showModal();
+      tbody.innerHTML = !mesesArray.length
+        ? '<tr><td colspan="7" style="text-align:center;color:var(--sub);padding:24px">No hay meses cerrados aún</td></tr>'
+        : mesesArray.map(mes => `
+            <tr>
+              <td style="font-weight:700;color:var(--brand-2)">${formatearMes(mes.mes)}</td>
+              <td class="num">${fmtMoney(mes.ventas)}</td>
+              <td class="num">${mes.tickets}</td>
+              <td class="num">${fmtMoney(mes.premios || 0)}</td>
+              <td class="num">${fmtMoney(mes.debitos)}</td>
+              <td class="num">${fmtMoney(mes.comisiones)}</td>
+              <td class="num">${mes.diasRegistrados}</td>
+            </tr>`).join('');
+      $('#modal-historico').showModal();
     };
-    
-    // Abrir comparación de meses
+
     window.abrirComparacionMeses = function() {
-      const modal = $('#modal-comparacion');
-      const select1 = $('#select-mes1');
-      const select2 = $('#select-mes2');
-      
       const mesesCerrados = JSON.parse(localStorage.getItem('quiniela_meses_cerrados') || '{}');
       const mesesArray = Object.keys(mesesCerrados).sort((a,b) => b.localeCompare(a));
-      
-      if (mesesArray.length < 2) {
-        alert('⚠️ Necesitas al menos 2 meses cerrados para comparar');
-        return;
-      }
-      
-      const options = mesesArray.map(mes => 
-        `<option value="${mes}">${formatearMes(mes)}</option>`
-      ).join('');
-      
-      select1.innerHTML = options;
-      select2.innerHTML = options;
-      
-      if (mesesArray.length >= 2) {
-        select2.selectedIndex = 1;
-      }
-      
-      modal.showModal();
+      if (mesesArray.length < 2) { alert('⚠️ Necesitas al menos 2 meses cerrados para comparar'); return; }
+      const options = mesesArray.map(mes => `<option value="${mes}">${formatearMes(mes)}</option>`).join('');
+      $('#select-mes1').innerHTML = options;
+      $('#select-mes2').innerHTML = options;
+      if (mesesArray.length >= 2) $('#select-mes2').selectedIndex = 1;
+      $('#modal-comparacion').showModal();
     };
-    
-    // Comparar dos meses seleccionados
+
     let chartComparacion = null;
     window.compararMeses = function() {
       const mes1 = $('#select-mes1').value;
       const mes2 = $('#select-mes2').value;
-      
-      if (mes1 === mes2) {
-        alert('⚠️ Selecciona dos meses diferentes');
-        return;
-      }
-      
+      if (mes1 === mes2) { alert('⚠️ Selecciona dos meses diferentes'); return; }
       const mesesCerrados = JSON.parse(localStorage.getItem('quiniela_meses_cerrados') || '{}');
       const datos1 = mesesCerrados[mes1];
       const datos2 = mesesCerrados[mes2];
-      
-      const ctx = $('#chart-comparacion');
-      
-      if (chartComparacion) {
-        chartComparacion.destroy();
-      }
-      
-      chartComparacion = new Chart(ctx, {
+      if (chartComparacion) chartComparacion.destroy();
+      chartComparacion = new Chart($('#chart-comparacion'), {
         type: 'bar',
         data: {
           labels: ['Ventas', 'Tickets', 'Premios', 'Débitos', 'Comisiones'],
           datasets: [
-            {
-              label: formatearMes(mes1),
-              data: [datos1.ventas, datos1.tickets, datos1.premios || 0, datos1.debitos, datos1.comisiones],
-              backgroundColor: '#22c55e'
-            },
-            {
-              label: formatearMes(mes2),
-              data: [datos2.ventas, datos2.tickets, datos2.premios || 0, datos2.debitos, datos2.comisiones],
-              backgroundColor: '#06b6d4'
-            }
+            { label: formatearMes(mes1), data: [datos1.ventas, datos1.tickets, datos1.premios||0, datos1.debitos, datos1.comisiones], backgroundColor: '#22c55e' },
+            { label: formatearMes(mes2), data: [datos2.ventas, datos2.tickets, datos2.premios||0, datos2.debitos, datos2.comisiones], backgroundColor: '#06b6d4' }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              labels: { color: '#cbd5e1' }
-            },
-            tooltip: {
-              backgroundColor: '#111827',
-              titleColor: '#e5e7eb',
-              bodyColor: '#cbd5e1',
-              borderColor: '#1f2937',
-              borderWidth: 1
-            }
+            legend: { labels: { color: '#cbd5e1' } },
+            tooltip: { backgroundColor: '#111827', titleColor: '#e5e7eb', bodyColor: '#cbd5e1', borderColor: '#1f2937', borderWidth: 1 }
           },
           scales: {
-            x: {
-              grid: { color: '#1f2937' },
-              ticks: { color: '#cbd5e1' }
-            },
-            y: {
-              grid: { color: '#1f2937' },
-              ticks: { 
-                color: '#cbd5e1',
-                callback: function(value) {
-                  return value.toLocaleString('es-AR');
-                }
-              }
-            }
+            x: { grid: { color: '#1f2937' }, ticks: { color: '#cbd5e1' } },
+            y: { grid: { color: '#1f2937' }, ticks: { color: '#cbd5e1', callback: v => v.toLocaleString('es-AR') } }
           }
         }
       });
     };
-    
-    // Formatear mes YYYY-MM a texto legible
+
     function formatearMes(mesStr) {
       const meses = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
       const [year, month] = mesStr.split('-');
       return `${meses[parseInt(month)-1]} ${year}`;
     }
 
-    console.log("🎲 El Esquinazo – Sistema cargado con Quiniela");
+    console.log("🎲 El Esquinazo 5.8 – Mora 20 días + Interés 15% activo");
   </script>
 </body>
 </html>
