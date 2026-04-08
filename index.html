@@ -479,7 +479,8 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           </div>
         </div>
         
-        <div class="cards five-cols">
+        <!-- ✅ CAMBIADO: six-cols para incluir la nueva card VARIABLE -->
+        <div class="cards six-cols">
           <div class="card kpi">
             <h3>💰 Ventas</h3>
             <div class="kpi-mini">
@@ -539,6 +540,16 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
               <div class="kpi-value" id="quiniela-comisiones-mes">$ 0</div>
             </div>
           </div>
+
+          <!-- ✅ NUEVA CARD: VARIABLE — muestra la deuda total de clientes -->
+          <div class="card kpi" style="border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.05)">
+            <h3>💸 Variable</h3>
+            <div class="kpi-mini">
+              <span class="kpi-mini-label">Deuda Clientes</span>
+              <div class="kpi-mini-value danger" id="quiniela-variable">$ 0</div>
+            </div>
+          </div>
+
         </div>
 
         <div class="quiniela-layout" style="margin-top:24px">
@@ -1390,6 +1401,10 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       if (!$('#form-quiniela').fecha.value) {
         $('#form-quiniela').fecha.value = hoy;
       }
+
+      // ✅ NUEVO: actualizar card VARIABLE con deuda total de clientes
+      const totalFiado = state.clientes.reduce((s, c) => s + saldoCliente(c), 0);
+      $('#quiniela-variable').textContent = fmtMoney(totalFiado);
     }
 
     let chartQuiniela = null;
@@ -1744,7 +1759,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       return `${meses[parseInt(month)-1]} ${year}`;
     }
 
-    console.log("🎲 El Esquinazo 5.8 – Mora 20 días + Interés 15% activo");
+    console.log("🎲 El Esquinazo 5.9 – Card VARIABLE con deuda total de clientes");
   </script>
 </body>
 </html>
