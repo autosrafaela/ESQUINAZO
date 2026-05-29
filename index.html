@@ -25,6 +25,7 @@
   --shadow: 0 6px 24px rgba(0,0,0,.35);
   --radius:16px;
   --mora:#f97316;
+  --incobrable:#7c3aed;
 }
 
 *{box-sizing:border-box}
@@ -126,6 +127,7 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
 @media(min-width:1024px){
   .cards.five-cols{grid-template-columns: repeat(5, 1fr);}
   .cards.six-cols{grid-template-columns: repeat(6, 1fr);}
+  .cards.seven-cols{grid-template-columns: repeat(7, 1fr);}
   .cards.four-cols{grid-template-columns: repeat(4, 1fr);}
 }
 .card{
@@ -140,15 +142,25 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
   background: rgba(249,115,22,0.08);
   animation: pulse-mora 2s infinite;
 }
+.card.incobrable-alert{
+  border-color: var(--incobrable);
+  background: rgba(124,58,237,0.08);
+  animation: pulse-incobrable 2s infinite;
+}
 @keyframes pulse-mora {
   0%, 100% { box-shadow: 0 0 0 0 rgba(249,115,22,0.3); }
   50% { box-shadow: 0 0 0 6px rgba(249,115,22,0); }
+}
+@keyframes pulse-incobrable {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(124,58,237,0.3); }
+  50% { box-shadow: 0 0 0 6px rgba(124,58,237,0); }
 }
 .kpi h3{margin:0 0 6px; color:var(--sub); font-weight:500; font-size:14px}
 .kpi-value{font-size:28px; margin:4px 0 0; font-weight:800; color:var(--brand-2)}
 .kpi-value.danger{color:var(--danger)}
 .kpi-value.success{color:var(--ok)}
 .kpi-value.mora{color:var(--mora)}
+.kpi-value.incobrable{color:var(--incobrable)}
 
 .section{margin-top:22px}
 .section h3{margin:0 0 10px; font-size:18px}
@@ -170,6 +182,7 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
 .btn.success{background:var(--ok); color:#00170f; border-color:transparent; font-weight:700; text-decoration:none; display:inline-block}
 .btn.warning{background:var(--warning); color:#1b1000; border-color:transparent; font-weight:700}
 .btn.mora{background:var(--mora); color:#fff; border-color:transparent; font-weight:700}
+.btn.incobrable{background:var(--incobrable); color:#fff; border-color:transparent; font-weight:700}
 .btn.light{background:transparent; color:var(--sub)}
 .btn.danger{background:var(--danger); color:#fff; border-color:transparent}
 .btn:disabled{opacity:.5; cursor:not-allowed}
@@ -196,6 +209,7 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
 }
 .item:hover{border-color:var(--muted)}
 .item.mora-item{border-color:var(--mora); background:rgba(249,115,22,0.05)}
+.item.incobrable-item{border-color:var(--incobrable); background:rgba(124,58,237,0.07)}
 .item .meta{display:flex; flex-direction:column; gap:4px; flex:1}
 .item .title{font-weight:700; font-size:16px}
 .item .sub{display:flex; gap:6px; flex-wrap:wrap}
@@ -206,6 +220,7 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
 .badge.red{color:#fff; background:var(--danger); border-color:transparent}
 .badge.amber{color:#1b1000; background:var(--warning); border-color:transparent}
 .badge.mora{color:#fff; background:var(--mora); border-color:transparent}
+.badge.incobrable{color:#fff; background:var(--incobrable); border-color:transparent}
 
 .toolbar{
   display:flex; gap:10px; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap;
@@ -234,6 +249,20 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
 }
 .mora-banner.visible{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
 .mora-banner strong{color:var(--mora)}
+
+/* Banner incobrable en ficha */
+.incobrable-banner{
+  display:none;
+  background:rgba(124,58,237,0.12);
+  border:1px solid var(--incobrable);
+  border-radius:12px;
+  padding:12px 16px;
+  margin-bottom:14px;
+  font-size:14px;
+  color:#e9d5ff;
+}
+.incobrable-banner.visible{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+.incobrable-banner strong{color:#a78bfa}
 
 .table-wrap{overflow:auto; border:1px solid var(--border); border-radius:12px; background:var(--panel)}
 .table{width:100%; border-collapse:collapse; min-width:600px}
@@ -325,6 +354,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
 .resumen-item:last-child{border-bottom:0}
 .resumen-label{color:var(--sub); font-size:14px}
 .resumen-valor{font-weight:700; font-size:16px; color:var(--brand-2)}
+.resumen-valor.danger{color:var(--danger)}
 
 .chart-container{
   margin-top:24px;
@@ -409,7 +439,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     <main id="app">
       <!-- DASHBOARD -->
       <div id="dashboard" class="view is-active">
-        <!-- KPIs: 6 columnas -->
+        <!-- KPIs: 6 columnas (sin cambios) -->
         <div class="cards six-cols">
           <div class="card kpi">
             <h3>Fiado Total</h3>
@@ -419,7 +449,6 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             <h3>Clientes con Deuda 👆</h3>
             <div class="kpi-value" id="kpi-condeuda">0</div>
           </div>
-          <!-- NUEVA CARD: MORA +20 DÍAS -->
           <div class="card kpi mora-alert" style="cursor:pointer" onclick="filtrarMora20()">
             <h3>⏰ Mora +20 días 👆</h3>
             <div class="kpi-value mora" id="kpi-mora20">0</div>
@@ -438,12 +467,42 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           </div>
         </div>
 
+        <!-- ✅ NUEVA CARD INCOBRABLES — fila propia destacada -->
+        <div class="cards" style="margin-top:12px; grid-template-columns:1fr" id="fila-incobrables">
+          <div class="card kpi incobrable-alert" style="cursor:pointer" onclick="filtrarIncobrables()">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
+              <div>
+                <h3 style="color:#a78bfa; font-size:15px; margin:0 0 8px">🚨 INCOBRABLES — Deuda +90 días 👆</h3>
+                <div style="display:flex; gap:24px; flex-wrap:wrap; align-items:center;">
+                  <div>
+                    <div class="kpi-mini-label">Clientes</div>
+                    <div class="kpi-value incobrable" id="kpi-incobrables-count">0</div>
+                  </div>
+                  <div>
+                    <div class="kpi-mini-label">Monto Total</div>
+                    <div class="kpi-value incobrable" id="kpi-incobrables-monto">$ 0</div>
+                  </div>
+                  <div style="color:var(--sub); font-size:13px; align-self:flex-end; padding-bottom:4px;">
+                    ⚠️ No se computan en <strong style="color:#e5e7eb">Variable / Deuda Clientes</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <section class="section">
           <h3>Acciones Rápidas</h3>
           <button class="btn primary" id="btn-nuevo-cliente-rapido">+ Añadir Cliente</button>
         </section>
 
-        <!-- NUEVA SECCIÓN: MORA +20 DÍAS -->
+        <!-- LISTA INCOBRABLES -->
+        <section class="section" id="seccion-incobrables" style="display:none">
+          <h3 style="color:#a78bfa">🚨 Incobrables (+90 días)</h3>
+          <div class="list" id="lista-incobrables"></div>
+        </section>
+
+        <!-- LISTA MORA 20 DÍAS -->
         <section class="section" id="seccion-mora20">
           <h3 style="color:var(--mora)">⏰ Clientes en Mora (+20 días)</h3>
           <div class="list" id="lista-mora20"></div>
@@ -479,8 +538,8 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           </div>
         </div>
         
-        <!-- ✅ CAMBIADO: six-cols para incluir la nueva card VARIABLE -->
-        <div class="cards six-cols">
+        <!-- ✅ seven-cols: agrega Retiros/Gastos -->
+        <div class="cards seven-cols">
           <div class="card kpi">
             <h3>💰 Ventas</h3>
             <div class="kpi-mini">
@@ -541,12 +600,29 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             </div>
           </div>
 
-          <!-- ✅ NUEVA CARD: VARIABLE — muestra la deuda total de clientes -->
+          <!-- ✅ NUEVA CARD: RETIROS/GASTOS -->
+          <div class="card kpi" style="border-color:rgba(245,158,11,0.4); background:rgba(245,158,11,0.05)">
+            <h3>🏧 Retiros/Gastos</h3>
+            <div class="kpi-mini">
+              <span class="kpi-mini-label">Hoy</span>
+              <div class="kpi-mini-value" style="color:var(--warning)" id="quiniela-retiros-hoy">$ 0</div>
+            </div>
+            <div class="kpi-mini" style="margin-top:8px">
+              <span class="kpi-mini-label">Mes</span>
+              <div class="kpi-value" style="color:var(--warning)" id="quiniela-retiros-mes">$ 0</div>
+            </div>
+          </div>
+
+          <!-- CARD VARIABLE: solo deuda activa (excluye incobrables) -->
           <div class="card kpi" style="border-color:rgba(239,68,68,0.4); background:rgba(239,68,68,0.05)">
             <h3>💸 Variable</h3>
             <div class="kpi-mini">
               <span class="kpi-mini-label">Deuda Clientes</span>
               <div class="kpi-mini-value danger" id="quiniela-variable">$ 0</div>
+            </div>
+            <div class="kpi-mini" style="margin-top:6px">
+              <span class="kpi-mini-label" style="color:#a78bfa">Incobrables excluidos</span>
+              <div style="font-size:13px; font-weight:700; color:#a78bfa" id="quiniela-variable-excluidos">$ 0</div>
             </div>
           </div>
 
@@ -580,6 +656,11 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
                 <span>💵 Comisiones</span>
                 <input type="number" name="comisiones" placeholder="0" step="0.01" min="0" required/>
               </label>
+              <!-- ✅ NUEVO CAMPO: RETIROS/GASTOS -->
+              <label class="full" style="border-top:1px solid var(--border); padding-top:12px; margin-top:4px">
+                <span style="color:var(--warning)">🏧 Retiros / Gastos</span>
+                <input type="number" name="retiros" placeholder="0" step="0.01" min="0"/>
+              </label>
               <div class="full">
                 <button type="submit" class="btn primary full-width">Guardar</button>
               </div>
@@ -607,6 +688,11 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             <div class="resumen-item">
               <span class="resumen-label">💵 Comisiones</span>
               <span class="resumen-valor" id="resumen-comisiones">$ 0</span>
+            </div>
+            <!-- ✅ RETIROS en resumen -->
+            <div class="resumen-item">
+              <span class="resumen-label">🏧 Retiros/Gastos</span>
+              <span class="resumen-valor danger" id="resumen-retiros">$ 0</span>
             </div>
             <div class="resumen-item" style="margin-top:12px; padding-top:12px; border-top:2px solid var(--border)">
               <span class="resumen-label" style="font-weight:700">Días Cargados</span>
@@ -643,13 +729,21 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             <button class="btn" onclick="abrirEditarCliente(state.fichaClienteId)">Editar</button>
             <button class="btn warning" id="btn-compartir-ficha">📤 Enviar Resumen</button>
             <button class="btn" id="btn-enviar-advertencia" style="background:#a855f7;border-color:#a855f7">⚠️ Enviar Advertencia</button>
-            <!-- NUEVO BOTÓN MORA -->
             <button class="btn mora" id="btn-interes-mora" style="display:none">🔴 Interés por Mora (15%)</button>
             <a class="btn success" id="btn-whatsapp" target="_blank" style="display:none">💬 WhatsApp</a>
           </div>
         </div>
 
-        <!-- BANNER DE MORA (aparece automáticamente si aplica) -->
+        <!-- Banner incobrable (tiene prioridad sobre mora) -->
+        <div class="incobrable-banner" id="incobrable-banner">
+          <span style="font-size:20px">🚨</span>
+          <div>
+            <strong id="incobrable-banner-texto">Esta deuda supera los 90 días y está clasificada como INCOBRABLE.</strong>
+            <span style="margin-left:8px;color:#c4b5fd;font-size:13px">El saldo no se computa en Variable/Deuda Clientes.</span>
+          </div>
+        </div>
+
+        <!-- Banner de mora normal -->
         <div class="mora-banner" id="mora-banner">
           <span style="font-size:20px">⏰</span>
           <div>
@@ -792,6 +886,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
                 <th class="num">Premios</th>
                 <th class="num">Débitos</th>
                 <th class="num">Comisiones</th>
+                <th class="num">Retiros/Gastos</th>
                 <th class="num">Días</th>
               </tr>
             </thead>
@@ -938,33 +1033,76 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       return Math.floor((hoy - primerFiado) / (1000 * 60 * 60 * 24));
     }
 
-    // ============================================================
-    // NUEVA FUNCIÓN: verificar si tiene mora de 20+ días
-    // ============================================================
+    // Mora 20+ días
     function tieneMora20(c) {
       return saldoCliente(c) > 0 && diasVencimiento(c) >= 20;
     }
 
+    // ============================================================
+    // NUEVA FUNCIÓN: incobrable si deuda >= 90 días
+    // ============================================================
+    function esIncobrable(c) {
+      return saldoCliente(c) > 0 && diasVencimiento(c) >= 90;
+    }
+
     // Renderizado Dashboard
     function renderDashboard() {
-      const total = state.clientes.reduce((s, c) => s + saldoCliente(c), 0);
-      const conDeuda = state.clientes.filter(c => saldoCliente(c) > 0).length;
-      const vencidas = state.clientes.filter(c => saldoCliente(c) > 0 && diasVencimiento(c) > 30);
+      // Separar incobrables de activos
+      const incobrables = state.clientes.filter(esIncobrable);
+      const montoIncobrables = incobrables.reduce((s, c) => s + saldoCliente(c), 0);
 
-      // NUEVO: clientes con mora 20+ días
-      const mora20 = state.clientes.filter(tieneMora20);
+      // Fiado total solo de NO incobrables
+      const totalActivo = state.clientes
+        .filter(c => !esIncobrable(c))
+        .reduce((s, c) => s + saldoCliente(c), 0);
 
-      $('#kpi-fiado').textContent = fmtMoney(total);
+      // Contar con deuda (excluye incobrables del conteo de mora/vencidos)
+      const conDeuda = state.clientes.filter(c => saldoCliente(c) > 0 && !esIncobrable(c)).length;
+      const vencidas = state.clientes.filter(c => saldoCliente(c) > 0 && diasVencimiento(c) > 30 && !esIncobrable(c));
+      const mora20 = state.clientes.filter(c => tieneMora20(c) && !esIncobrable(c));
+
+      // KPIs
+      $('#kpi-fiado').textContent = fmtMoney(totalActivo);
       $('#kpi-condeuda').textContent = conDeuda;
       $('#kpi-vencidas').textContent = vencidas.length;
       $('#kpi-mora20').textContent = mora20.length;
 
-      // Efecto visual: si hay mora, la card pulsa
+      // Card mora pulsa solo si hay mora activa
       const cardMora = $('#kpi-mora20').closest('.card');
-      if (mora20.length > 0) {
-        cardMora.classList.add('mora-alert');
+      cardMora.classList.toggle('mora-alert', mora20.length > 0);
+
+      // ✅ INCOBRABLES card
+      $('#kpi-incobrables-count').textContent = incobrables.length;
+      $('#kpi-incobrables-monto').textContent = fmtMoney(montoIncobrables);
+
+      // Mostrar/ocultar sección incobrables
+      const secInc = $('#seccion-incobrables');
+      const listaInc = $('#lista-incobrables');
+      if (incobrables.length > 0) {
+        secInc.style.display = 'block';
+        listaInc.innerHTML = '';
+        incobrables.forEach(c => {
+          const saldo = saldoCliente(c);
+          const dias = diasVencimiento(c);
+          const div = document.createElement('div');
+          div.className = 'item incobrable-item';
+          div.innerHTML = `
+            <div class="meta">
+              <div class="title">${c.nombre}</div>
+              <div class="sub">
+                <span class="badge red">${fmtMoney(saldo)}</span>
+                <span class="badge incobrable">🚨 ${dias} días</span>
+              </div>
+            </div>
+            <div class="actions-row">
+              <button class="btn incobrable" onclick="abrirFicha('${c.id}')">Ver Ficha</button>
+              ${c.whatsapp ? `<button class="btn" onclick="enviarInteresMora('${c.id}')">📲 Notificar</button>` : ''}
+            </div>
+          `;
+          listaInc.appendChild(div);
+        });
       } else {
-        cardMora.classList.remove('mora-alert');
+        secInc.style.display = 'none';
       }
 
       // Nuevas cards
@@ -978,7 +1116,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       }).length;
       $('#kpi-clientes-nuevos').textContent = clientesNuevos;
 
-      // --- Lista Mora 20 días ---
+      // Lista Mora 20 días (excluye incobrables)
       const listaMora20 = $('#lista-mora20');
       listaMora20.innerHTML = '';
       if (!mora20.length) {
@@ -1009,7 +1147,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         });
       }
 
-      // --- Lista Vencidas (30+ días) ---
+      // Lista Vencidas 30+ (excluye incobrables)
       const listaVencidas = $('#lista-vencidas');
       listaVencidas.innerHTML = '';
       if (!vencidas.length) {
@@ -1042,15 +1180,16 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       lista.innerHTML = '';
       filtrados.forEach(c => {
         const saldo = saldoCliente(c);
-        const mora = tieneMora20(c);
+        const mora = tieneMora20(c) && !esIncobrable(c);
+        const incobrable = esIncobrable(c);
         const div = document.createElement('div');
-        div.className = 'item' + (mora ? ' mora-item' : '');
+        div.className = 'item' + (incobrable ? ' incobrable-item' : (mora ? ' mora-item' : ''));
         div.innerHTML = `
           <div class="meta">
             <div class="title">${c.nombre}</div>
             <div class="sub">
               ${saldo > 0 ? `<span class="badge red">${fmtMoney(saldo)}</span>` : '<span class="badge">Al día</span>'}
-              ${mora ? `<span class="badge mora">⏰ ${diasVencimiento(c)} días</span>` : ''}
+              ${incobrable ? `<span class="badge incobrable">🚨 INCOBRABLE ${diasVencimiento(c)} días</span>` : (mora ? `<span class="badge mora">⏰ ${diasVencimiento(c)} días</span>` : '')}
             </div>
           </div>
           <div class="actions-row">
@@ -1080,23 +1219,31 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         $('#btn-whatsapp').style.display = 'none';
       }
 
-      // ============================================================
-      // NUEVA LÓGICA: mostrar botón e banner de mora si aplica
-      // ============================================================
       const dias = diasVencimiento(c);
       const btnMora = $('#btn-interes-mora');
       const banner = $('#mora-banner');
+      const bannerInc = $('#incobrable-banner');
 
-      if (tieneMora20(c)) {
+      // ✅ Prioridad: incobrable > mora > normal
+      if (esIncobrable(c)) {
+        // Mostrar banner incobrable, ocultar mora
+        bannerInc.classList.add('visible');
+        $('#incobrable-banner-texto').textContent =
+          `🚨 Esta deuda lleva ${dias} días de atraso y está clasificada como INCOBRABLE. Monto: ${fmtMoney(saldo)}`;
+        banner.classList.remove('visible');
+        btnMora.style.display = 'none';
+      } else if (tieneMora20(c)) {
         const interes = saldo * 0.15;
         const totalConInteres = saldo + interes;
         btnMora.style.display = 'inline-block';
         banner.classList.add('visible');
+        bannerInc.classList.remove('visible');
         $('#mora-banner-texto').textContent =
           `⚠️ Esta deuda lleva ${dias} días de atraso. Deuda: ${fmtMoney(saldo)} → Con 15% de interés: ${fmtMoney(totalConInteres)}`;
       } else {
         btnMora.style.display = 'none';
         banner.classList.remove('visible');
+        bannerInc.classList.remove('visible');
       }
       
       renderHistorial(c);
@@ -1280,10 +1427,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       };
     };
 
-    // ============================================================
-    // NUEVA FUNCIÓN: Enviar mensaje de interés por mora (15%)
-    // Puede llamarse desde la ficha o desde el dashboard
-    // ============================================================
+    // Enviar mensaje de interés por mora (15%)
     window.enviarInteresMora = function(clienteId) {
       const id = clienteId || state.fichaClienteId;
       const c = state.clientes.find(x => x.id === id);
@@ -1315,7 +1459,9 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       window.open(url, '_blank');
     };
 
-    // Quiniela
+    // ============================================================
+    // QUINIELA — formulario con campo RETIROS
+    // ============================================================
     $('#form-quiniela').addEventListener('submit', async (e) => {
       e.preventDefault();
       const fecha = $('#form-quiniela').fecha.value;
@@ -1324,11 +1470,13 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       const premios = Number($('#form-quiniela').premios.value || 0);
       const debitos = Number($('#form-quiniela').debitos.value || 0);
       const comisiones = Number($('#form-quiniela').comisiones.value || 0);
+      // ✅ NUEVO: retiros/gastos
+      const retiros = Number($('#form-quiniela').retiros.value || 0);
 
       if (!fecha) return;
 
       const id = fecha;
-      const registro = { id, fecha, ventas, tickets, premios, debitos, comisiones };
+      const registro = { id, fecha, ventas, tickets, premios, debitos, comisiones, retiros };
 
       await guardarQuinielaRegistro(registro);
       
@@ -1370,14 +1518,16 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         tickets: acc.tickets + d.tickets,
         premios: acc.premios + (d.premios || 0),
         debitos: acc.debitos + d.debitos,
-        comisiones: acc.comisiones + d.comisiones
-      }), { ventas: 0, tickets: 0, premios: 0, debitos: 0, comisiones: 0 });
+        comisiones: acc.comisiones + d.comisiones,
+        retiros: acc.retiros + (d.retiros || 0)   // ✅
+      }), { ventas: 0, tickets: 0, premios: 0, debitos: 0, comisiones: 0, retiros: 0 });
 
       const esMesActual = mesSeleccionado === `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`;
       const datosHoy = esMesActual 
-        ? (state.quinielaData.find(d => d.fecha === hoy) || { ventas: 0, tickets: 0, premios: 0, debitos: 0, comisiones: 0 })
-        : { ventas: 0, tickets: 0, premios: 0, debitos: 0, comisiones: 0 };
+        ? (state.quinielaData.find(d => d.fecha === hoy) || { ventas: 0, tickets: 0, premios: 0, debitos: 0, comisiones: 0, retiros: 0 })
+        : { ventas: 0, tickets: 0, premios: 0, debitos: 0, comisiones: 0, retiros: 0 };
 
+      // KPI cards quiniela
       $('#quiniela-ventas-hoy').textContent = fmtMoney(datosHoy.ventas);
       $('#quiniela-ventas-mes').textContent = fmtMoney(totalesMes.ventas);
       $('#quiniela-tickets-hoy').textContent = datosHoy.tickets;
@@ -1389,11 +1539,17 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       $('#quiniela-comisiones-hoy').textContent = fmtMoney(datosHoy.comisiones);
       $('#quiniela-comisiones-mes').textContent = fmtMoney(totalesMes.comisiones);
 
+      // ✅ RETIROS en KPI
+      $('#quiniela-retiros-hoy').textContent = fmtMoney(datosHoy.retiros || 0);
+      $('#quiniela-retiros-mes').textContent = fmtMoney(totalesMes.retiros);
+
+      // Resumen del mes
       $('#resumen-ventas').textContent = fmtMoney(totalesMes.ventas);
       $('#resumen-tickets').textContent = totalesMes.tickets;
       $('#resumen-premios').textContent = fmtMoney(totalesMes.premios);
       $('#resumen-debitos').textContent = fmtMoney(totalesMes.debitos);
       $('#resumen-comisiones').textContent = fmtMoney(totalesMes.comisiones);
+      $('#resumen-retiros').textContent = fmtMoney(totalesMes.retiros);  // ✅
       $('#resumen-dias').textContent = datosMes.length;
 
       renderGraficoQuiniela(datosMes);
@@ -1402,9 +1558,16 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         $('#form-quiniela').fecha.value = hoy;
       }
 
-      // ✅ NUEVO: actualizar card VARIABLE con deuda total de clientes
-      const totalFiado = state.clientes.reduce((s, c) => s + saldoCliente(c), 0);
-      $('#quiniela-variable').textContent = fmtMoney(totalFiado);
+      // ✅ VARIABLE: solo deuda activa (excluye incobrables)
+      const montoIncobrables = state.clientes
+        .filter(esIncobrable)
+        .reduce((s, c) => s + saldoCliente(c), 0);
+      const totalActivo = state.clientes
+        .filter(c => !esIncobrable(c))
+        .reduce((s, c) => s + saldoCliente(c), 0);
+      
+      $('#quiniela-variable').textContent = fmtMoney(totalActivo);
+      $('#quiniela-variable-excluidos').textContent = `- ${fmtMoney(montoIncobrables)}`;
     }
 
     let chartQuiniela = null;
@@ -1443,6 +1606,14 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           data: datosOrdenados.map(d => d.comisiones),
           borderColor: '#f59e0b',
           backgroundColor: 'rgba(245, 158, 11, 0.1)',
+          tension: 0.3
+        },
+        // ✅ RETIROS en gráfico
+        {
+          label: 'Retiros/Gastos',
+          data: datosOrdenados.map(d => d.retiros || 0),
+          borderColor: '#fb923c',
+          backgroundColor: 'rgba(251, 146, 60, 0.1)',
           tension: 0.3
         },
         {
@@ -1518,8 +1689,6 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
     $('#btn-registrar-jugada').addEventListener('click', () => abrirNuevoMov('jugada'));
     $('#btn-compartir-ficha').addEventListener('click', compartirFicha);
     $('#btn-enviar-advertencia').addEventListener('click', enviarAdvertencia);
-
-    // NUEVO: evento del botón mora en la ficha
     $('#btn-interes-mora').addEventListener('click', () => enviarInteresMora(state.fichaClienteId));
 
     $('#year').textContent = new Date().getFullYear();
@@ -1573,15 +1742,16 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       }
       clientesConDeuda.forEach(c => {
         const saldo = saldoCliente(c);
-        const mora = tieneMora20(c);
+        const mora = tieneMora20(c) && !esIncobrable(c);
+        const incobrable = esIncobrable(c);
         const div = document.createElement('div');
-        div.className = 'item' + (mora ? ' mora-item' : '');
+        div.className = 'item' + (incobrable ? ' incobrable-item' : (mora ? ' mora-item' : ''));
         div.innerHTML = `
           <div class="meta">
             <div class="title">${c.nombre}</div>
             <div class="sub">
               <span class="badge red">${fmtMoney(saldo)}</span>
-              ${mora ? `<span class="badge mora">⏰ ${diasVencimiento(c)} días</span>` : ''}
+              ${incobrable ? `<span class="badge incobrable">🚨 INCOBRABLE ${diasVencimiento(c)} días</span>` : (mora ? `<span class="badge mora">⏰ ${diasVencimiento(c)} días</span>` : '')}
             </div>
           </div>
           <div class="actions-row">
@@ -1597,7 +1767,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
 
     window.filtrarDeudasVencidas = function() {
       switchView('clientes');
-      const vencidas = state.clientes.filter(c => saldoCliente(c) > 0 && diasVencimiento(c) > 30);
+      const vencidas = state.clientes.filter(c => saldoCliente(c) > 0 && diasVencimiento(c) > 30 && !esIncobrable(c));
       const lista = $('#lista-clientes');
       lista.innerHTML = '';
       if (!vencidas.length) {
@@ -1628,10 +1798,9 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       $('#buscar-clientes').value = '';
     };
 
-    // NUEVO: filtrar clientes con mora 20+ días desde la card del dashboard
     window.filtrarMora20 = function() {
       switchView('clientes');
-      const mora20 = state.clientes.filter(tieneMora20);
+      const mora20 = state.clientes.filter(c => tieneMora20(c) && !esIncobrable(c));
       const lista = $('#lista-clientes');
       lista.innerHTML = '';
       if (!mora20.length) {
@@ -1664,6 +1833,39 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       $('#buscar-clientes').value = '';
     };
 
+    // ✅ NUEVO: filtrar incobrables
+    window.filtrarIncobrables = function() {
+      switchView('clientes');
+      const incobrables = state.clientes.filter(esIncobrable);
+      const lista = $('#lista-clientes');
+      lista.innerHTML = '';
+      if (!incobrables.length) {
+        lista.innerHTML = '<div style="color:var(--muted); padding:12px">✅ No hay clientes incobrables</div>';
+        return;
+      }
+      incobrables.forEach(c => {
+        const saldo = saldoCliente(c);
+        const dias = diasVencimiento(c);
+        const div = document.createElement('div');
+        div.className = 'item incobrable-item';
+        div.innerHTML = `
+          <div class="meta">
+            <div class="title">${c.nombre}</div>
+            <div class="sub">
+              <span class="badge red">${fmtMoney(saldo)}</span>
+              <span class="badge incobrable">🚨 ${dias} días sin pagar</span>
+            </div>
+          </div>
+          <div class="actions-row">
+            ${c.whatsapp ? `<button class="btn incobrable" onclick="enviarInteresMora('${c.id}')">📲 Notificar</button>` : ''}
+            <button class="btn" onclick="abrirFicha('${c.id}')">Ver Ficha</button>
+          </div>
+        `;
+        lista.appendChild(div);
+      });
+      $('#buscar-clientes').value = '';
+    };
+
     // Quiniela: Cerrar Mes
     window.cerrarMesQuiniela = async function() {
       const mesSeleccionado = $('#selector-mes-quiniela').value;
@@ -1672,7 +1874,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       if (mesesCerrados[mesSeleccionado]) { alert('⚠️ Este mes ya fue cerrado anteriormente'); return; }
       if (!confirm(`¿Cerrar el mes ${formatearMes(mesSeleccionado)}?\n\nEsto guardará los datos actuales como histórico.`)) return;
       
-      let ventasMes = 0, ticketsMes = 0, premiosMes = 0, debitosMes = 0, comisionesMes = 0, diasRegistrados = 0;
+      let ventasMes = 0, ticketsMes = 0, premiosMes = 0, debitosMes = 0, comisionesMes = 0, retirosMes = 0, diasRegistrados = 0;
       state.quinielaData.forEach(r => {
         if (r.fecha.startsWith(mesSeleccionado)) {
           ventasMes += r.ventas || 0;
@@ -1680,14 +1882,20 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           premiosMes += r.premios || 0;
           debitosMes += r.debitos || 0;
           comisionesMes += r.comisiones || 0;
+          retirosMes += r.retiros || 0;   // ✅
           diasRegistrados++;
         }
       });
       if (!diasRegistrados) { alert('⚠️ No hay datos registrados para este mes'); return; }
       
-      mesesCerrados[mesSeleccionado] = { mes: mesSeleccionado, ventas: ventasMes, tickets: ticketsMes, premios: premiosMes, debitos: debitosMes, comisiones: comisionesMes, diasRegistrados, fechaCierre: new Date().toISOString() };
+      mesesCerrados[mesSeleccionado] = {
+        mes: mesSeleccionado,
+        ventas: ventasMes, tickets: ticketsMes, premios: premiosMes,
+        debitos: debitosMes, comisiones: comisionesMes, retiros: retirosMes,  // ✅
+        diasRegistrados, fechaCierre: new Date().toISOString()
+      };
       localStorage.setItem('quiniela_meses_cerrados', JSON.stringify(mesesCerrados));
-      alert(`✅ Mes ${formatearMes(mesSeleccionado)} cerrado correctamente\n\nVentas: ${fmtMoney(ventasMes)}\nTickets: ${ticketsMes}\nPremios: ${fmtMoney(premiosMes)}\nDébitos: ${fmtMoney(debitosMes)}\nComisiones: ${fmtMoney(comisionesMes)}\nDías: ${diasRegistrados}`);
+      alert(`✅ Mes ${formatearMes(mesSeleccionado)} cerrado correctamente\n\nVentas: ${fmtMoney(ventasMes)}\nTickets: ${ticketsMes}\nPremios: ${fmtMoney(premiosMes)}\nDébitos: ${fmtMoney(debitosMes)}\nComisiones: ${fmtMoney(comisionesMes)}\nRetiros/Gastos: ${fmtMoney(retirosMes)}\nDías: ${diasRegistrados}`);
     };
 
     window.abrirHistoricoMensual = function() {
@@ -1695,7 +1903,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       const mesesCerrados = JSON.parse(localStorage.getItem('quiniela_meses_cerrados') || '{}');
       const mesesArray = Object.values(mesesCerrados).sort((a,b) => b.mes.localeCompare(a.mes));
       tbody.innerHTML = !mesesArray.length
-        ? '<tr><td colspan="7" style="text-align:center;color:var(--sub);padding:24px">No hay meses cerrados aún</td></tr>'
+        ? '<tr><td colspan="8" style="text-align:center;color:var(--sub);padding:24px">No hay meses cerrados aún</td></tr>'
         : mesesArray.map(mes => `
             <tr>
               <td style="font-weight:700;color:var(--brand-2)">${formatearMes(mes.mes)}</td>
@@ -1704,6 +1912,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
               <td class="num">${fmtMoney(mes.premios || 0)}</td>
               <td class="num">${fmtMoney(mes.debitos)}</td>
               <td class="num">${fmtMoney(mes.comisiones)}</td>
+              <td class="num" style="color:var(--warning)">${fmtMoney(mes.retiros || 0)}</td>
               <td class="num">${mes.diasRegistrados}</td>
             </tr>`).join('');
       $('#modal-historico').showModal();
@@ -1732,10 +1941,18 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       chartComparacion = new Chart($('#chart-comparacion'), {
         type: 'bar',
         data: {
-          labels: ['Ventas', 'Tickets', 'Premios', 'Débitos', 'Comisiones'],
+          labels: ['Ventas', 'Tickets', 'Premios', 'Débitos', 'Comisiones', 'Retiros/Gastos'],
           datasets: [
-            { label: formatearMes(mes1), data: [datos1.ventas, datos1.tickets, datos1.premios||0, datos1.debitos, datos1.comisiones], backgroundColor: '#22c55e' },
-            { label: formatearMes(mes2), data: [datos2.ventas, datos2.tickets, datos2.premios||0, datos2.debitos, datos2.comisiones], backgroundColor: '#06b6d4' }
+            {
+              label: formatearMes(mes1),
+              data: [datos1.ventas, datos1.tickets, datos1.premios||0, datos1.debitos, datos1.comisiones, datos1.retiros||0],
+              backgroundColor: '#22c55e'
+            },
+            {
+              label: formatearMes(mes2),
+              data: [datos2.ventas, datos2.tickets, datos2.premios||0, datos2.debitos, datos2.comisiones, datos2.retiros||0],
+              backgroundColor: '#06b6d4'
+            }
           ]
         },
         options: {
@@ -1759,7 +1976,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       return `${meses[parseInt(month)-1]} ${year}`;
     }
 
-    console.log("🎲 El Esquinazo 5.9 – Card VARIABLE con deuda total de clientes");
+    console.log("🎲 El Esquinazo 6.0 – Retiros/Gastos + Incobrables 90 días");
   </script>
 </body>
 </html>
