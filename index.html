@@ -128,6 +128,7 @@ main#app{padding:16px; max-width:1100px; margin-inline:auto; min-height: calc(10
   .cards.five-cols{grid-template-columns: repeat(5, 1fr);}
   .cards.six-cols{grid-template-columns: repeat(6, 1fr);}
   .cards.seven-cols{grid-template-columns: repeat(7, 1fr);}
+  .cards.eight-cols{grid-template-columns: repeat(8, 1fr);}
   .cards.four-cols{grid-template-columns: repeat(4, 1fr);}
 }
 .card{
@@ -389,6 +390,68 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
   color:var(--text);
 }
 
+/* ===== CARD NOTAS ===== */
+.card-notas{
+  border-color:rgba(99,179,237,0.35) !important;
+  background:rgba(99,179,237,0.04) !important;
+  display:flex; flex-direction:column; gap:8px;
+  min-width:0;
+}
+.card-notas h3{ margin:0 0 4px; font-size:13px; }
+.notas-lista{
+  flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:6px;
+  max-height:160px;
+}
+.nota-item{
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:6px;
+  padding:6px 8px;
+  font-size:12px;
+  line-height:1.4;
+  display:flex; align-items:flex-start; gap:6px;
+  word-break:break-word;
+}
+.nota-item span{ flex:1; }
+.nota-item .nota-btns{ display:flex; flex-direction:column; gap:3px; flex-shrink:0; }
+.nota-btn{
+  background:none; border:none; cursor:pointer;
+  font-size:13px; padding:0; line-height:1;
+  opacity:0.6; transition:opacity .2s;
+}
+.nota-btn:hover{ opacity:1; }
+.notas-input-row{
+  display:flex; gap:6px; align-items:center;
+}
+.notas-input{
+  flex:1; background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:6px; color:var(--text);
+  font-size:12px; padding:5px 8px;
+  resize:none; font-family:inherit;
+  min-height:34px;
+}
+.notas-input:focus{ outline:none; border-color:rgba(99,179,237,0.6); }
+.btn-nota-add{
+  background:rgba(99,179,237,0.2); border:1px solid rgba(99,179,237,0.4);
+  color:#63b3ed; border-radius:6px; cursor:pointer;
+  font-size:13px; padding:5px 9px; font-weight:700;
+  transition:background .2s; white-space:nowrap;
+}
+.btn-nota-add:hover{ background:rgba(99,179,237,0.35); }
+.nota-edit-input{
+  flex:1; background:rgba(255,255,255,0.1);
+  border:1px solid rgba(99,179,237,0.5);
+  border-radius:4px; color:var(--text);
+  font-size:12px; padding:3px 6px;
+  font-family:inherit; resize:none;
+}
+.nota-edit-input:focus{ outline:none; }
+.notas-vacia{
+  font-size:11px; color:var(--sub);
+  text-align:center; padding:12px 0;
+}
+
   </style>
 </head>
 <body>
@@ -538,8 +601,8 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
           </div>
         </div>
         
-        <!-- ✅ seven-cols: agrega Retiros/Gastos -->
-        <div class="cards seven-cols">
+        <!-- ✅ eight-cols: agrega Retiros/Gastos + Notas -->
+        <div class="cards eight-cols">
           <div class="card kpi">
             <h3>💰 Ventas</h3>
             <div class="kpi-mini">
@@ -623,6 +686,18 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
             <div class="kpi-mini" style="margin-top:6px">
               <span class="kpi-mini-label" style="color:#a78bfa">Incobrables excluidos</span>
               <div style="font-size:13px; font-weight:700; color:#a78bfa" id="quiniela-variable-excluidos">$ 0</div>
+            </div>
+          </div>
+
+          <!-- ✅ CARD NOTAS -->
+          <div class="card kpi card-notas">
+            <h3>📝 Notas</h3>
+            <div class="notas-lista" id="notas-lista">
+              <p class="notas-vacia">Sin notas aún</p>
+            </div>
+            <div class="notas-input-row">
+              <textarea class="notas-input" id="notas-nueva-input" placeholder="Nueva nota..." rows="1"></textarea>
+              <button class="btn-nota-add" id="btn-agregar-nota">＋</button>
             </div>
           </div>
 
@@ -932,7 +1007,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
     import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-    import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+    import { getFirestore, collection, getDocs, doc, setDoc, deleteDoc, addDoc, query, orderBy, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
     const firebaseConfig = {
       apiKey: "AIzaSyDuHOmx6K4_7ke85fdlrnQlOGAfMI7bQf4",
@@ -975,6 +1050,7 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
         $('#main-app').removeAttribute('hidden');
         await cargarDatos();
         await cargarQuinielaData();
+        await cargarNotas();
         renderAll();
         renderQuiniela();
       } else {
@@ -1976,7 +2052,118 @@ input:focus, select:focus{outline:2px solid rgba(6,182,212,.3); border-color:var
       return `${meses[parseInt(month)-1]} ${year}`;
     }
 
-    console.log("🎲 El Esquinazo 6.0 – Retiros/Gastos + Incobrables 90 días");
+    // ============================================================
+    //  MÓDULO NOTAS — Firebase collection 'notas'
+    // ============================================================
+    let notasCache = []; // {id, texto}
+
+    async function cargarNotas() {
+      try {
+        const q = query(collection(db, 'notas'), orderBy('creadoEn', 'asc'));
+        const snap = await getDocs(q);
+        notasCache = snap.docs.map(d => ({ id: d.id, texto: d.data().texto }));
+      } catch(e) {
+        // Si no existe la colección aún, simplemente empieza vacía
+        notasCache = [];
+      }
+      renderNotas();
+    }
+
+    function renderNotas() {
+      const lista = $('#notas-lista');
+      if (!notasCache.length) {
+        lista.innerHTML = '<p class="notas-vacia">Sin notas aún</p>';
+        return;
+      }
+      lista.innerHTML = notasCache.map((n, i) => `
+        <div class="nota-item" id="nota-item-${i}">
+          <span id="nota-texto-${i}">${escHTML(n.texto)}</span>
+          <div class="nota-btns">
+            <button class="nota-btn" title="Editar" onclick="editarNota(${i})">✏️</button>
+            <button class="nota-btn" title="Borrar" onclick="borrarNota(${i})">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function escHTML(t) {
+      return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+    }
+
+    window.editarNota = function(i) {
+      const item = $(`#nota-item-${i}`);
+      const span = $(`#nota-texto-${i}`);
+      const textoActual = notasCache[i].texto;
+      span.outerHTML = `<textarea class="nota-edit-input" id="nota-edit-${i}" rows="2">${textoActual}</textarea>`;
+      const btns = item.querySelector('.nota-btns');
+      btns.innerHTML = `
+        <button class="nota-btn" title="Guardar" onclick="guardarEdicionNota(${i})">💾</button>
+        <button class="nota-btn" title="Cancelar" onclick="renderNotas()">✖️</button>
+      `;
+    };
+
+    window.guardarEdicionNota = async function(i) {
+      const input = $(`#nota-edit-${i}`);
+      const nuevoTexto = input.value.trim();
+      if (!nuevoTexto) return;
+      const id = notasCache[i].id;
+      try {
+        await updateDoc(doc(db, 'notas', id), { texto: nuevoTexto });
+        notasCache[i].texto = nuevoTexto;
+      } catch(e) {
+        alert('Error al guardar: ' + e.message);
+        return;
+      }
+      renderNotas();
+    };
+
+    window.borrarNota = async function(i) {
+      if (!confirm('¿Borrar esta nota?')) return;
+      const id = notasCache[i].id;
+      try {
+        await deleteDoc(doc(db, 'notas', id));
+        notasCache.splice(i, 1);
+      } catch(e) {
+        alert('Error al borrar: ' + e.message);
+        return;
+      }
+      renderNotas();
+    };
+
+    // Botón agregar nota
+    $('#btn-agregar-nota').addEventListener('click', async () => {
+      const input = $('#notas-nueva-input');
+      const texto = input.value.trim();
+      if (!texto) return;
+      try {
+        const docRef = await addDoc(collection(db, 'notas'), {
+          texto,
+          creadoEn: Date.now()
+        });
+        notasCache.push({ id: docRef.id, texto });
+        input.value = '';
+        renderNotas();
+        // Scroll al final
+        const lista = $('#notas-lista');
+        lista.scrollTop = lista.scrollHeight;
+      } catch(e) {
+        alert('Error al agregar: ' + e.message);
+      }
+    });
+
+    // Enter sin Shift agrega la nota
+    $('#notas-nueva-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        $('#btn-agregar-nota').click();
+      }
+    });
+
+    // Cargar notas al arrancar (después de auth)
+    // Se llama desde onAuthStateChanged -> cargarDatos
+    // Lo integramos al flujo existente abajo
+
+    console.log("🎲 El Esquinazo 7.0 – Notas integradas");
   </script>
 </body>
 </html>
